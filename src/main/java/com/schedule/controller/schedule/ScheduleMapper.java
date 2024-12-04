@@ -9,9 +9,7 @@ public class ScheduleMapper {
     public static ScheduleDto toDto(Schedule schedule) {
         return new ScheduleDto(
                 schedule.getName(),
-                schedule.getContent(),
-                schedule.getCreated(),
-                schedule.getUpdated()
+                schedule.getContent()
         );
     }
 

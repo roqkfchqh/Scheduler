@@ -28,4 +28,14 @@ public class ScheduleController {
     public ScheduleDto getSchedule(@PathVariable UUID id) {
         return scheduleService.getSchedule(id);
     }
+
+    @PostMapping("/{id}")
+    public void updateSchedule(@PathVariable UUID id, @RequestParam String password, @RequestBody ScheduleDto dto) {
+        scheduleService.updateSchedule(id, password, dto);
+    }
+
+    @PostMapping("/{id}/delete")
+    public void deleteSchedule(@PathVariable UUID id, @RequestBody String password) {
+        scheduleService.deleteSchedule(id, password);
+    }
 }

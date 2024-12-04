@@ -37,6 +37,48 @@ public class ScheduleDao {
         }
     }
 
+    //update
+    public void update(Schedule schedule){
+        String sql = "UPDATE Schedule SET name = ?, content = ?, password = ?, updated = ? WHERE id = ?";
+
+        try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement pstmt = conn.prepareStatement(sql)){
+
+            pstmt.setString(1, schedule.getName());
+            pstmt.setString(2, schedule.getContent());
+            pstmt.setString(3, schedule.getPassword());
+            pstmt.setTimestamp(4, Timestamp.valueOf(schedule.getUpdated()));
+            pstmt.setString(5, schedule.getId().toString());
+
+            int rowsUpdated = pstmt.executeUpdate();
+            if(rowsUpdated == 0){
+                throw new BadInputException("오류요");
+            }
+
+        }catch(SQLException e){
+            throw new BadInputException("오류요" + e.getMessage());
+        }
+    }
+
+    //delete
+    public void deleteByID(UUID id){
+        String sql = "DELETE FROM Schedule WHERE id = ?";
+
+        try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement pstmt = conn.prepareStatement(sql)){
+
+            pstmt.setString(1, id.toString());
+
+            int rowsDeleted = pstmt.executeUpdate();
+            if(rowsDeleted == 0){
+                throw new BadInputException("오류요");
+            }
+
+        }catch(SQLException e){
+            throw new BadInputException("오류요" + e.getMessage());
+        }
+    }
+
     //모두조회
     public List<Schedule> findAll(String name, LocalDate date){
         String sql = "SELECT id, name, content, password, created, updated FROM Schedule WHERE 1=1";

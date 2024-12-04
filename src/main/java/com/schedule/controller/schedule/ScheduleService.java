@@ -40,4 +40,33 @@ public class ScheduleService {
         }
         return ScheduleMapper.toDto(schedule);
     }
+
+    public ScheduleDto updateSchedule(UUID id, String password, ScheduleDto dto){
+        Schedule schedule = scheduleDao.findById(id);
+        if(schedule == null){
+            throw new BadInputException("오류요");
+        }
+
+        if (!passwordEncoder.matches(password, schedule.getPassword())) {
+            throw new BadInputException("오류요");
+        }
+
+        schedule.setName(dto.getName());
+        schedule.setContent(dto.getContent());
+        schedule.updateTimestamp();
+        scheduleDao.update(schedule);
+
+        return ScheduleMapper.toDto(schedule);
+    }
+
+    public void deleteSchedule(UUID id, String password){
+        Schedule schedule = scheduleDao.findById(id);
+        if(schedule == null){
+            throw new BadInputException("오류요");
+        }
+        if (!passwordEncoder.matches(password, schedule.getPassword())) {
+            throw new BadInputException("오류요");
+        }
+        scheduleDao.deleteByID(id);
+    }
 }
