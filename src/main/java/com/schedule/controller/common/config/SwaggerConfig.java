@@ -1,4 +1,4 @@
-package com.schedule.controller.common;
+package com.schedule.controller.common.config;
 
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -13,7 +13,7 @@ public class SwaggerConfig {
         return new OpenAPI()
                 .info(new Info()
                         .title("Scheduler")
-                        .version("lv1")
+                        .version("challenge")
                         .description("Schedule API")
                 );
     }

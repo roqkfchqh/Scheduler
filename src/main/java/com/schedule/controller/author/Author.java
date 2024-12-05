@@ -14,7 +14,7 @@ import java.util.UUID;
 public class Author {
 
     private UUID id;
-    private Integer ip_address;
+    private String ip_address;
     private String email;
     private String name;
     private String password;

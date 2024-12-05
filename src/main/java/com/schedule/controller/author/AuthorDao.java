@@ -13,13 +13,70 @@ public class AuthorDao {
     private static final String USER = "postgres";
     private static final String PASSWORD = System.getenv("DB_PASSWORD");
 
-    public String findPassword(UUID id){
+    public void createAuthor(Author author){
+        String sql = "INSERT INTO author (id, ip_adress, email, name, password) VALUES (?, ?, ?, ?, ?)";
+
+        try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)){
+
+            pstmt.setString(1, author.getId().toString());
+            pstmt.setString(2, author.getIp_address());
+            pstmt.setString(3, author.getEmail());
+            pstmt.setString(4, author.getName());
+            pstmt.setString(5, author.getPassword());
+
+            pstmt.executeUpdate();
+
+        }catch(SQLException e){
+            throw new CustomException(ErrorCode.BAD_GATEWAY);
+        }
+    }
+
+    public void updateAuthor(Author author){
+        String sql = "UPDATE author SET name = ?, password = ?, email = ? WHERE id = ?";
+
+        try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            PreparedStatement pstmt = conn.prepareStatement(sql)){
+
+            pstmt.setString(1, author.getName());
+            pstmt.setString(2, author.getPassword());
+            pstmt.setString(3, author.getEmail());
+
+            int rowsUpdated = pstmt.executeUpdate();
+            if(rowsUpdated == 0){
+                throw new CustomException(ErrorCode.BAD_GATEWAY);
+            }
+
+        }catch(SQLException e){
+            throw new CustomException(ErrorCode.BAD_GATEWAY);
+        }
+    }
+
+    public void deleteAuthor(UUID authorId){
+        String sql = "DELETE FROM author WHERE id = ?";
+
+        try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            PreparedStatement pstmt = conn.prepareStatement(sql)){
+
+            pstmt.setString(1, authorId.toString());
+
+            int rowsDeleted = pstmt.executeUpdate();
+            if(rowsDeleted == 0){
+                throw new CustomException(ErrorCode.BAD_GATEWAY);
+            }
+
+        }catch(SQLException e){
+            throw new CustomException(ErrorCode.BAD_GATEWAY);
+        }
+    }
+
+    public String findPassword(UUID authorId){
         String sql = "SELECT password FROM author WHERE id = ?";
 
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
             PreparedStatement pstmt = conn.prepareStatement(sql)){
 
-            pstmt.setString(1, id.toString());
+            pstmt.setString(1, authorId.toString());
 
             try(ResultSet rs = pstmt.executeQuery()){
                 if(rs.next()){
@@ -38,7 +95,7 @@ public class AuthorDao {
         author.setName(rs.getString("name"));
         author.setEmail(rs.getString("email"));
         author.setPassword(rs.getString("password"));
-        author.setIp_address(rs.getInt("ip_address"));
+        author.setIp_address(rs.getString("ip_address"));
         return author;
     }
 }

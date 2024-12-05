@@ -25,12 +25,12 @@ public class ScheduleService {
 
     public ScheduleResponseDto saveSchedule(ScheduleRequestDto dto){
         Schedule schedule = ScheduleMapper.toEntity(dto, UUID.randomUUID());
-        scheduleDao.save(schedule);
+        scheduleDao.saveSchedule(schedule);
         return ScheduleMapper.toDto(schedule);
     }
 
-    public List<ScheduleResponseDto> getAllSchedules(String name, LocalDate date){
-        List<Schedule> schedules = scheduleDao.findAll(name, date);
+    public List<ScheduleResponseDto> getAllSchedules(String authorName, LocalDate date){
+        List<Schedule> schedules = scheduleDao.findAllSchedule(authorName, date);
         if(schedules == null){
             throw new CustomException(ErrorCode.NOT_FOUND);
         }
@@ -39,42 +39,42 @@ public class ScheduleService {
                 .collect(Collectors.toList());
     }
 
-    public ScheduleResponseDto getSchedule(UUID id){
-        Schedule schedule = scheduleDao.findById(id);
+    public ScheduleResponseDto getSchedule(UUID scheduleId){
+        Schedule schedule = scheduleDao.findScheduleById(scheduleId);
         if(schedule == null){
             throw new CustomException(ErrorCode.NOT_FOUND);
         }
         return ScheduleMapper.toDto(schedule);
     }
 
-    public ScheduleResponseDto updateSchedule(UUID id, ScheduleRequestDto dto, String password){
-        Schedule schedule = validIdAndPassword(id, password);
+    public ScheduleResponseDto updateSchedule(UUID scheduleId, ScheduleRequestDto dto, String authorPassword){
+        Schedule schedule = validateIdAndPassword(scheduleId, authorPassword);
         schedule.updateSchedule(
                 dto.getContent()
         );
-        scheduleDao.update(schedule);
+        scheduleDao.updateSchedule(schedule);
         return ScheduleMapper.toDto(schedule);
     }
 
-    public void deleteSchedule(UUID id, String password){
-        validIdAndPassword(id, password);
-        scheduleDao.deleteByID(id);
+    public void deleteSchedule(UUID scheduleId, String authorPassword){
+        validateIdAndPassword(scheduleId, authorPassword);
+        scheduleDao.deleteSchedule(scheduleId);
     }
 
-    private Schedule validIdAndPassword(UUID id, String password) {
-        Schedule schedule = scheduleDao.findById(id);
+    private Schedule validateIdAndPassword(UUID scheduleId, String authorPassword) {
+        Schedule schedule = scheduleDao.findScheduleById(scheduleId);
         if(schedule == null){
             throw new CustomException(ErrorCode.NOT_FOUND);
         }
 
         try{
-            String url = "http://localhost:8080/authors/valid-password";
+            String url = "http://localhost:8080/authors/validate-password";
             ResponseEntity<Boolean> response = restTemplate.postForEntity(
                     url,
-                    Map.of("id", schedule.getAuthor_id(), "password", password),
+                    Map.of("id", schedule.getAuthor_id(), "password", authorPassword),
                     Boolean.class);
 
-            if(!Boolean.TRUE.equals(response.getBody())){
+            if(Boolean.FALSE.equals(response.getBody())){
                 throw new CustomException(ErrorCode.BAD_REQUEST);
             }
         }catch(Exception e){

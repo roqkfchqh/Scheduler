@@ -12,12 +12,13 @@ import java.util.UUID;
 
 @Repository
 public class ScheduleDao {
+
     private static final String URL = "jdbc:postgresql://localhost:5432/schedule_db";
     private static final String USER = "postgres";
     private static final String PASSWORD = System.getenv("DB_PASSWORD");
 
-    //save
-    public void save(Schedule schedule){
+    //saveSchedule
+    public void saveSchedule(Schedule schedule){
         String sql = "INSERT INTO schedule (id, content, author_id, created, updated) VALUES (?, ?, ?, ?, ?)";
 
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
@@ -36,8 +37,8 @@ public class ScheduleDao {
         }
     }
 
-    //update
-    public void update(Schedule schedule){
+    //updateSchedule
+    public void updateSchedule(Schedule schedule){
         String sql = "UPDATE schedule SET content = ?, updated = ? WHERE id = ?";
 
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
@@ -58,13 +59,13 @@ public class ScheduleDao {
     }
 
     //delete
-    public void deleteByID(UUID id){
+    public void deleteSchedule(UUID scheduleId){
         String sql = "DELETE FROM schedule WHERE id = ?";
 
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement pstmt = conn.prepareStatement(sql)){
 
-            pstmt.setString(1, id.toString());
+            pstmt.setString(1, scheduleId.toString());
 
             int rowsDeleted = pstmt.executeUpdate();
             if(rowsDeleted == 0){
@@ -77,11 +78,11 @@ public class ScheduleDao {
     }
 
     //모두조회
-    public List<Schedule> findAll(String name, LocalDate date){
+    public List<Schedule> findAllSchedule(String authorName, LocalDate date){
         String sql = "SELECT id, name, content, password, created, updated FROM schedule WHERE 1=1";
         List<Schedule> schedules = new ArrayList<>();
 
-        if(name != null){
+        if(authorName != null){
             sql += " AND name = ?";
         }
         if(date != null){
@@ -93,8 +94,8 @@ public class ScheduleDao {
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             int index = 1;
-            if (name != null) {
-                pstmt.setString(index++, name);
+            if (authorName != null) {
+                pstmt.setString(index++, authorName);
             }
             if (date != null) {
                 pstmt.setDate(index++, Date.valueOf(date));
@@ -113,13 +114,13 @@ public class ScheduleDao {
     }
 
     //id 로 조회
-    public Schedule findById(UUID id){
+    public Schedule findScheduleById(UUID scheduleId){
         String sql = "SELECT id, content, author_id, created, updated FROM schedule WHERE id = ?";
 
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
             PreparedStatement pstmt = conn.prepareStatement(sql)){
 
-            pstmt.setString(1, id.toString());
+            pstmt.setString(1, scheduleId.toString());
 
             try(ResultSet rs = pstmt.executeQuery()){
                 if(rs.next()){

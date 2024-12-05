@@ -23,23 +23,23 @@ public class ScheduleController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ScheduleResponseDto>> getSchedules(@RequestParam(required = false) String name, @RequestParam(required = false) LocalDate date) {
-        return ResponseEntity.ok(scheduleService.getAllSchedules(name, date));
+    public ResponseEntity<List<ScheduleResponseDto>> getSchedules(@RequestParam(required = false) String authorName, @RequestParam(required = false) LocalDate date) {
+        return ResponseEntity.ok(scheduleService.getAllSchedules(authorName, date));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ScheduleResponseDto> getSchedule(@PathVariable UUID id) {
-        return ResponseEntity.ok(scheduleService.getSchedule(id));
+    @GetMapping("/{scheduleId}")
+    public ResponseEntity<ScheduleResponseDto> getSchedule(@PathVariable UUID scheduleId) {
+        return ResponseEntity.ok(scheduleService.getSchedule(scheduleId));
     }
 
-    @PostMapping("/{id}")
-    public ResponseEntity<ScheduleResponseDto> updateSchedule(@PathVariable UUID id, @RequestBody ScheduleRequestDto dto, @RequestHeader String password) {
-        return ResponseEntity.ok(scheduleService.updateSchedule(id, dto, password));
+    @PostMapping("/{scheduleId}/update")
+    public ResponseEntity<ScheduleResponseDto> updateSchedule(@PathVariable UUID scheduleId, @RequestBody ScheduleRequestDto dto, @RequestHeader String authorPassword) {
+        return ResponseEntity.ok(scheduleService.updateSchedule(scheduleId, dto, authorPassword));
     }
 
-    @PostMapping("/{id}/delete")
-    public ResponseEntity<ScheduleResponseDto> deleteSchedule(@PathVariable UUID id, @RequestBody String password) {
-        scheduleService.deleteSchedule(id, password);
+    @PostMapping("/{scheduleId}/delete")
+    public ResponseEntity<ScheduleResponseDto> deleteSchedule(@PathVariable UUID scheduleId, @RequestBody String authorPassword) {
+        scheduleService.deleteSchedule(scheduleId, authorPassword);
         return ResponseEntity.noContent().build();
     }
 }
