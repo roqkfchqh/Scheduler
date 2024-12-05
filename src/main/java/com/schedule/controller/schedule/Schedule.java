@@ -13,11 +13,9 @@ import java.util.UUID;
 @EqualsAndHashCode(of = "id")
 public class Schedule {
 
-    public Schedule(String name, String content, String password) {
+    public Schedule(String content) {
         this();
-        this.name = name;
         this.content = content;
-        this.password = password;
     }
 
     public Schedule(){
@@ -27,14 +25,12 @@ public class Schedule {
     }
 
     private UUID id;
-    private String name;
+    private UUID author_id;
     private String content;
-    private String password;
     private LocalDateTime created;
     private LocalDateTime updated;
 
-    public void updateSchedule(String name, String content) {
-        this.name = name;
+    public void updateSchedule(String content) {
         this.content = content;
         this.updated = LocalDateTime.now();
     }

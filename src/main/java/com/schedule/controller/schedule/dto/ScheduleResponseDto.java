@@ -13,9 +13,8 @@ import java.util.UUID;
 public class ScheduleResponseDto {
 
     private UUID id;
-    private String name;
     private String content;
-    private String password;
+    private UUID author_id;
     private LocalDateTime created;
     private LocalDateTime updated;
 }

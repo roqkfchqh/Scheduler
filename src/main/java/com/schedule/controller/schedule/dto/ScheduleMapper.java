@@ -11,9 +11,8 @@ public class ScheduleMapper {
     public static ScheduleResponseDto toDto(Schedule schedule) {
         return ScheduleResponseDto.builder()
                 .id(schedule.getId())
-                .name(schedule.getName())
                 .content(schedule.getContent())
-                .password(schedule.getPassword())
+                .author_id(schedule.getAuthor_id())
                 .created(schedule.getCreated())
                 .updated(schedule.getUpdated())
                 .build();
@@ -21,12 +20,11 @@ public class ScheduleMapper {
     }
 
     //dto -> entity
-    public static Schedule toEntity(ScheduleRequestDto dto, String password, UUID id) {
+    public static Schedule toEntity(ScheduleRequestDto dto, UUID id) {
         return Schedule.builder()
                 .id(id)
-                .name(dto.getName())
                 .content(dto.getContent())
-                .password(password)
+                .author_id(dto.getAuthor_id())
                 .created(LocalDateTime.now())
                 .updated(LocalDateTime.now())
                 .build();

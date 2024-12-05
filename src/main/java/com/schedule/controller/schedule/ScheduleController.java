@@ -1,7 +1,6 @@
 package com.schedule.controller.schedule;
 
-import com.schedule.controller.schedule.dto.CombinedRequestDto;
-import com.schedule.controller.schedule.dto.PasswordRequestDto;
+import com.schedule.controller.schedule.dto.ScheduleRequestDto;
 import com.schedule.controller.schedule.dto.ScheduleResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +18,7 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
 
     @PostMapping
-    public ResponseEntity<ScheduleResponseDto> saveSchedule(@RequestBody CombinedRequestDto dto) {
+    public ResponseEntity<ScheduleResponseDto> saveSchedule(@RequestBody ScheduleRequestDto dto) {
         return ResponseEntity.ok(scheduleService.saveSchedule(dto));
     }
 
@@ -34,13 +33,13 @@ public class ScheduleController {
     }
 
     @PostMapping("/{id}")
-    public ResponseEntity<ScheduleResponseDto> updateSchedule(@PathVariable UUID id, @RequestBody CombinedRequestDto dto) {
-        return ResponseEntity.ok(scheduleService.updateSchedule(id, dto));
+    public ResponseEntity<ScheduleResponseDto> updateSchedule(@PathVariable UUID id, @RequestBody ScheduleRequestDto dto, @RequestHeader String password) {
+        return ResponseEntity.ok(scheduleService.updateSchedule(id, dto, password));
     }
 
     @PostMapping("/{id}/delete")
-    public ResponseEntity<ScheduleResponseDto> deleteSchedule(@PathVariable UUID id, @RequestBody PasswordRequestDto dto) {
-        scheduleService.deleteSchedule(id, dto);
+    public ResponseEntity<ScheduleResponseDto> deleteSchedule(@PathVariable UUID id, @RequestBody String password) {
+        scheduleService.deleteSchedule(id, password);
         return ResponseEntity.noContent().build();
     }
 }

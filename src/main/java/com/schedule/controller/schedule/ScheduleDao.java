@@ -18,17 +18,16 @@ public class ScheduleDao {
 
     //save
     public void save(Schedule schedule){
-        String sql = "INSERT INTO schedule (id, name, content, password, created, updated) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO schedule (id, content, author_id, created, updated) VALUES (?, ?, ?, ?, ?)";
 
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
             PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)){
 
             pstmt.setString(1, schedule.getId().toString());
-            pstmt.setString(2, schedule.getName());
-            pstmt.setString(3, schedule.getContent());
-            pstmt.setString(4, schedule.getPassword());
-            pstmt.setTimestamp(5, Timestamp.valueOf(schedule.getCreated()));
-            pstmt.setTimestamp(6, Timestamp.valueOf(schedule.getUpdated()));
+            pstmt.setString(2, schedule.getContent());
+            pstmt.setString(3, schedule.getAuthor_id().toString());
+            pstmt.setTimestamp(4, Timestamp.valueOf(schedule.getCreated()));
+            pstmt.setTimestamp(5, Timestamp.valueOf(schedule.getUpdated()));
 
             pstmt.executeUpdate();
 
@@ -39,15 +38,14 @@ public class ScheduleDao {
 
     //update
     public void update(Schedule schedule){
-        String sql = "UPDATE schedule SET name = ?, content = ?, updated = ? WHERE id = ?";
+        String sql = "UPDATE schedule SET content = ?, updated = ? WHERE id = ?";
 
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement pstmt = conn.prepareStatement(sql)){
 
-            pstmt.setString(1, schedule.getName());
-            pstmt.setString(2, schedule.getContent());
-            pstmt.setTimestamp(3, Timestamp.valueOf(schedule.getUpdated()));
-            pstmt.setString(4, schedule.getId().toString());
+            pstmt.setString(1, schedule.getContent());
+            pstmt.setTimestamp(2, Timestamp.valueOf(schedule.getUpdated()));
+            pstmt.setString(3, schedule.getId().toString());
 
             int rowsUpdated = pstmt.executeUpdate();
             if(rowsUpdated == 0){
@@ -70,7 +68,7 @@ public class ScheduleDao {
 
             int rowsDeleted = pstmt.executeUpdate();
             if(rowsDeleted == 0){
-                throw new BadInputException("오류요");
+                throw new CustomException(ErrorCode.BAD_GATEWAY);
             }
 
         }catch(SQLException e){
@@ -116,7 +114,7 @@ public class ScheduleDao {
 
     //id 로 조회
     public Schedule findById(UUID id){
-        String sql = "SELECT id, name, content, password, created, updated FROM schedule WHERE id = ?";
+        String sql = "SELECT id, content, author_id, created, updated FROM schedule WHERE id = ?";
 
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
             PreparedStatement pstmt = conn.prepareStatement(sql)){
@@ -138,9 +136,8 @@ public class ScheduleDao {
     private Schedule mapResultSetToSchedule(ResultSet rs) throws SQLException{
         Schedule schedule = new Schedule();
         schedule.setId(UUID.fromString(rs.getString("id")));
-        schedule.setName(rs.getString("name"));
         schedule.setContent(rs.getString("content"));
-        schedule.setPassword(rs.getString("password"));
+        schedule.setAuthor_id(UUID.fromString(rs.getString("author_id")));
         schedule.setCreated(rs.getTimestamp("created").toLocalDateTime());
         schedule.setUpdated(rs.getTimestamp("updated").toLocalDateTime());
         return schedule;
