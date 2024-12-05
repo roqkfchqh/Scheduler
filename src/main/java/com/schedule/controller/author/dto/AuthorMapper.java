@@ -16,13 +16,12 @@ public class AuthorMapper {
                 .build();
     }
 
-    public static Author toEntity(AuthorRequestDto dto, UUID id) {
-        return Author.builder()
-                .id(id)
-                .name(dto.getName())
-                .email(dto.getEmail())
-                .password(dto.getPassword())
-                .ipAddress(dto.getIpAddress())
-                .build();
+    public static Author toEntity(AuthorRequestDto dto, String encodedPassword, String clientIp) {
+        return Author.create(
+                clientIp,
+                dto.getEmail(),
+                dto.getName(),
+                encodedPassword
+                );
     }
 }

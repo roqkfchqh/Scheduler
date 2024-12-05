@@ -22,17 +22,17 @@ public class AuthorController {
     @PostMapping
     public ResponseEntity<AuthorResponseDto> createAuthor(HttpServletRequest request, @RequestBody AuthorRequestDto dto) {
         String clientIp = getClientIp(request);
-        dto.setIpAddress(clientIp);
-        return ResponseEntity.ok(authorService.createAuthor(dto));
+        return ResponseEntity.ok(authorService.createAuthor(clientIp, dto));
     }
 
     @PostMapping("/{authorId}/update")
-    public ResponseEntity<AuthorResponseDto> updateAuthor(@PathVariable UUID authorId, @RequestBody CombinedAuthorRequestDto dto) {
-        return ResponseEntity.ok(authorService.updateAuthor(authorId, dto));
+    public ResponseEntity<AuthorResponseDto> updateAuthor(HttpServletRequest request, @PathVariable UUID authorId, @RequestBody CombinedAuthorRequestDto dto) {
+        String clientIp = getClientIp(request);
+        return ResponseEntity.ok(authorService.updateAuthor(clientIp, authorId, dto));
     }
 
     @PostMapping("/{authorId}/delete")
-    public ResponseEntity<AuthorResponseDto> deleteAuthor(@PathVariable UUID authorId, @RequestBody PasswordRequestDto dto) {
+    public ResponseEntity<AuthorResponseDto> deleteAuthor(@PathVariable UUID authorId, @RequestBody PasswordRequestDto dto){
         authorService.deleteAuthor(authorId, dto);
         return ResponseEntity.noContent().build();
     }
@@ -41,16 +41,16 @@ public class AuthorController {
     public ResponseEntity<Boolean> validatePasswordForSchedule(@RequestBody Map<String, Object> payload) {
         UUID authorId = UUID.fromString(payload.get("uuid").toString());
         String password = payload.get("password").toString();
-        boolean isValid = authorService.validatePasswordForSchedule(authorId, password);
+        boolean isValid = authorService.validateAuthor(authorId, password);
         return ResponseEntity.ok(isValid);
     }
 
-    public String getClientIp(HttpServletRequest request){
+    public String getClientIp(HttpServletRequest request) {
         String ipAddress = request.getHeader("X-Forwarded-For");
-        if(ipAddress == null || ipAddress.isEmpty()){
+        if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
             ipAddress = request.getRemoteAddr();
         }
-        return ipAddress;
+        return ipAddress.split(",")[0].trim();
     }
 
 }

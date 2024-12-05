@@ -16,19 +16,26 @@ public class AuthorService {
     private final AuthorDao authorDao;
     private final PasswordEncoder passwordEncoder;
 
-    public AuthorResponseDto createAuthor(AuthorRequestDto dto) {
-        Author author = AuthorMapper.toEntity(dto, UUID.randomUUID());
+    public AuthorResponseDto createAuthor(String clientIp, AuthorRequestDto dto) {
+        extractedIp(clientIp);
+        String encodedPassword = passwordEncoder.encode(dto.getPassword());
+        Author author = AuthorMapper.toEntity(dto, encodedPassword, clientIp);
+
         authorDao.createAuthor(author);
         return AuthorMapper.toDto(author);
     }
 
-    public AuthorResponseDto updateAuthor(UUID authorId, CombinedAuthorRequestDto dto) {
-        Author author = validateAuthor(authorId, dto.getPasswordDto().getPassword());
+    public AuthorResponseDto updateAuthor(String clientIp, UUID authorId, CombinedAuthorRequestDto dto){
+        extractedIp(clientIp);
+        Author author = authorDao.findAuthorById(authorId);
+        validateAuthor(authorId, dto.getPasswordDto().getPassword());
+        String encodedPassword = passwordEncoder.encode(dto.getAuthorDto().getPassword());
+
         author.updateAuthor(
                 dto.getAuthorDto().getName(),
                 dto.getAuthorDto().getEmail(),
-                dto.getAuthorDto().getIpAddress(),
-                dto.getPasswordDto().getPassword()
+                clientIp,
+                encodedPassword
         );
         authorDao.updateAuthor(author);
         return AuthorMapper.toDto(author);
@@ -39,12 +46,7 @@ public class AuthorService {
         authorDao.deleteAuthor(authorId);
     }
 
-    public boolean validatePasswordForSchedule(UUID authorId, String password) {
-        String authorPassword = authorDao.findPassword(authorId);
-        return passwordEncoder.matches(password, authorPassword);
-    }
-
-    public Author validateAuthor(UUID authorId, String password){
+    public boolean validateAuthor(UUID authorId, String password){
         Author author = authorDao.findAuthorById(authorId);
         if(author == null){
             throw new CustomException(ErrorCode.USER_NOT_FOUND);
@@ -52,7 +54,13 @@ public class AuthorService {
         if(!passwordEncoder.matches(password, author.getPassword())){
             throw new CustomException(ErrorCode.BAD_REQUEST);
         }
-        return author;
+        return true;
+    }
+
+    private static void extractedIp(String clientIp){
+        if (clientIp == null || clientIp.isEmpty()){
+            throw new CustomException(ErrorCode.INVALID_IP);
+        }
     }
 
 }

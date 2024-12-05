@@ -14,7 +14,7 @@ public class AuthorDao {
     private static final String PASSWORD = System.getenv("DB_PASSWORD");
 
     public void createAuthor(Author author){
-        String sql = "INSERT INTO author (id, ip_adress, email, name, password) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO author (id, ip_address, email, name, password) VALUES (?, ?, ?, ?, ?)";
 
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
             PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)){
@@ -33,14 +33,17 @@ public class AuthorDao {
     }
 
     public void updateAuthor(Author author){
-        String sql = "UPDATE author SET name = ?, password = ?, email = ? WHERE id = ?";
+        String sql = "UPDATE author SET name = ?, ip_address = ?, password = ?, email = ? WHERE id = ?";
 
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
             PreparedStatement pstmt = conn.prepareStatement(sql)){
 
             pstmt.setString(1, author.getName());
-            pstmt.setString(2, author.getPassword());
-            pstmt.setString(3, author.getEmail());
+            pstmt.setString(2, author.getIpAddress());
+            pstmt.setString(3, author.getPassword());
+            pstmt.setString(4, author.getEmail());
+            pstmt.setString(5, author.getId().toString());
+
 
             int rowsUpdated = pstmt.executeUpdate();
             if(rowsUpdated == 0){
@@ -70,27 +73,8 @@ public class AuthorDao {
         }
     }
 
-    public String findPassword(UUID authorId){
-        String sql = "SELECT password FROM author WHERE id = ?";
-
-        try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
-            PreparedStatement pstmt = conn.prepareStatement(sql)){
-
-            pstmt.setString(1, authorId.toString());
-
-            try(ResultSet rs = pstmt.executeQuery()){
-                if(rs.next()){
-                    return rs.getString("password");
-                }
-            }
-        }catch (SQLException e){
-            throw new CustomException(ErrorCode.BAD_GATEWAY);
-        }
-        return null;
-    }
-
     public Author findAuthorById(UUID authorId){
-        String sql = "SELECT id, name, email FROM author WHERE id = ?";
+        String sql = "SELECT id, name, email, password, ip_address FROM author WHERE id = ?";
 
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
             PreparedStatement pstmt = conn.prepareStatement(sql)){
@@ -100,6 +84,9 @@ public class AuthorDao {
             try(ResultSet rs = pstmt.executeQuery()){
                 if(rs.next()){
                     return mapResultSetToAuthor(rs);
+                }
+                if(!rs.next()){
+                    throw new CustomException(ErrorCode.BAD_GATEWAY);
                 }
             }
         }catch(SQLException e){

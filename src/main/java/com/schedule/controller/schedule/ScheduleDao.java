@@ -106,6 +106,9 @@ public class ScheduleDao {
                 while (rs.next()) {
                     schedules.add(mapResultSetToSchedule(rs));
                 }
+                if(!rs.next()){
+                    throw new CustomException(ErrorCode.BAD_GATEWAY);
+                }
             }
         }catch(SQLException e) {
             throw new CustomException(ErrorCode.BAD_GATEWAY);
@@ -125,6 +128,9 @@ public class ScheduleDao {
             try(ResultSet rs = pstmt.executeQuery()){
                 if(rs.next()){
                     return mapResultSetToSchedule(rs);
+                }
+                if(!rs.next()){
+                    throw new CustomException(ErrorCode.BAD_GATEWAY);
                 }
             }
         }catch(SQLException e){
