@@ -10,6 +10,7 @@ public class ScheduleMapper {
     //entity -> dto
     public static ScheduleResponseDto toDto(Schedule schedule) {
         return ScheduleResponseDto.builder()
+                .id(schedule.getId())
                 .name(schedule.getName())
                 .content(schedule.getContent())
                 .password(schedule.getPassword())
