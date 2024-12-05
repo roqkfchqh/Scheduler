@@ -12,7 +12,7 @@ public class AuthorMapper {
                 .id(author.getId())
                 .name(author.getName())
                 .email(author.getEmail())
-                .ip_address(author.getIp_address())
+                .ipAddress(author.getIpAddress())
                 .build();
     }
 
@@ -22,7 +22,7 @@ public class AuthorMapper {
                 .name(dto.getName())
                 .email(dto.getEmail())
                 .password(dto.getPassword())
-                .ip_address(dto.getIpAddress())
+                .ipAddress(dto.getIpAddress())
                 .build();
     }
 }

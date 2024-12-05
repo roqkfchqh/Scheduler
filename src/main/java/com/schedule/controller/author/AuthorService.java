@@ -1,6 +1,8 @@
 package com.schedule.controller.author;
 
 import com.schedule.controller.author.dto.*;
+import com.schedule.controller.common.exception.CustomException;
+import com.schedule.controller.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,22 +23,36 @@ public class AuthorService {
     }
 
     public AuthorResponseDto updateAuthor(UUID authorId, CombinedAuthorRequestDto dto) {
-        Author author = AuthorMapper.toEntity(dto.getAuthorDto(), authorId);
+        Author author = validateAuthor(authorId, dto.getPasswordDto().getPassword());
+        author.updateAuthor(
+                dto.getAuthorDto().getName(),
+                dto.getAuthorDto().getEmail(),
+                dto.getAuthorDto().getIpAddress(),
+                dto.getPasswordDto().getPassword()
+        );
         authorDao.updateAuthor(author);
         return AuthorMapper.toDto(author);
     }
 
     public void deleteAuthor(UUID authorId, PasswordRequestDto dto) {
-
+        validateAuthor(authorId, dto.getPassword());
         authorDao.deleteAuthor(authorId);
     }
 
-
-
-    public boolean validatePassword(UUID authorId, String password) {
+    public boolean validatePasswordForSchedule(UUID authorId, String password) {
         String authorPassword = authorDao.findPassword(authorId);
         return passwordEncoder.matches(password, authorPassword);
     }
 
+    public Author validateAuthor(UUID authorId, String password){
+        Author author = authorDao.findAuthorById(authorId);
+        if(author == null){
+            throw new CustomException(ErrorCode.USER_NOT_FOUND);
+        }
+        if(!passwordEncoder.matches(password, author.getPassword())){
+            throw new CustomException(ErrorCode.BAD_REQUEST);
+        }
+        return author;
+    }
 
 }

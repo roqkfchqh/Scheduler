@@ -38,10 +38,10 @@ public class AuthorController {
     }
 
     @PostMapping("/validate-password")
-    public ResponseEntity<Boolean> validatePassword(@RequestBody Map<String, Object> payload) {
+    public ResponseEntity<Boolean> validatePasswordForSchedule(@RequestBody Map<String, Object> payload) {
         UUID authorId = UUID.fromString(payload.get("uuid").toString());
         String password = payload.get("password").toString();
-        boolean isValid = authorService.validatePassword(authorId, password);
+        boolean isValid = authorService.validatePasswordForSchedule(authorId, password);
         return ResponseEntity.ok(isValid);
     }
 

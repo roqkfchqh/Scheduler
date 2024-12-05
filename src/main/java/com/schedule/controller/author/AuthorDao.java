@@ -20,7 +20,7 @@ public class AuthorDao {
             PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)){
 
             pstmt.setString(1, author.getId().toString());
-            pstmt.setString(2, author.getIp_address());
+            pstmt.setString(2, author.getIpAddress());
             pstmt.setString(3, author.getEmail());
             pstmt.setString(4, author.getName());
             pstmt.setString(5, author.getPassword());
@@ -89,13 +89,32 @@ public class AuthorDao {
         return null;
     }
 
+    public Author findAuthorById(UUID authorId){
+        String sql = "SELECT id, name, email FROM author WHERE id = ?";
+
+        try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            PreparedStatement pstmt = conn.prepareStatement(sql)){
+
+            pstmt.setString(1, authorId.toString());
+
+            try(ResultSet rs = pstmt.executeQuery()){
+                if(rs.next()){
+                    return mapResultSetToAuthor(rs);
+                }
+            }
+        }catch(SQLException e){
+            throw new CustomException(ErrorCode.BAD_GATEWAY);
+        }
+        return null;
+    }
+
     private Author mapResultSetToAuthor(ResultSet rs) throws SQLException{
         Author author = new Author();
         author.setId(UUID.fromString(rs.getString("id")));
         author.setName(rs.getString("name"));
         author.setEmail(rs.getString("email"));
         author.setPassword(rs.getString("password"));
-        author.setIp_address(rs.getString("ip_address"));
+        author.setIpAddress(rs.getString("ip_address"));
         return author;
     }
 }
