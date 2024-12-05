@@ -24,7 +24,7 @@ public class ScheduleDao {
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
             PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)){
 
-            pstmt.setString(1, schedule.getId().toString());
+            pstmt.setObject(1, schedule.getId());
             pstmt.setString(2, schedule.getContent());
             pstmt.setString(3, schedule.getAuthor_id().toString());
             pstmt.setTimestamp(4, Timestamp.valueOf(schedule.getCreated()));
@@ -46,7 +46,7 @@ public class ScheduleDao {
 
             pstmt.setString(1, schedule.getContent());
             pstmt.setTimestamp(2, Timestamp.valueOf(schedule.getUpdated()));
-            pstmt.setString(3, schedule.getId().toString());
+            pstmt.setObject(3, schedule.getId());
 
             int rowsUpdated = pstmt.executeUpdate();
             if(rowsUpdated == 0){
@@ -65,7 +65,7 @@ public class ScheduleDao {
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement pstmt = conn.prepareStatement(sql)){
 
-            pstmt.setString(1, scheduleId.toString());
+            pstmt.setObject(1, scheduleId);
 
             int rowsDeleted = pstmt.executeUpdate();
             if(rowsDeleted == 0){
@@ -123,7 +123,7 @@ public class ScheduleDao {
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
             PreparedStatement pstmt = conn.prepareStatement(sql)){
 
-            pstmt.setString(1, scheduleId.toString());
+            pstmt.setObject(1, scheduleId);
 
             try(ResultSet rs = pstmt.executeQuery()){
                 if(rs.next()){
@@ -142,7 +142,7 @@ public class ScheduleDao {
     //resultSet -> schedule mapping
     private Schedule mapResultSetToSchedule(ResultSet rs) throws SQLException{
         Schedule schedule = new Schedule();
-        schedule.setId(UUID.fromString(rs.getString("id")));
+        schedule.setId((UUID) rs.getObject("id"));
         schedule.setContent(rs.getString("content"));
         schedule.setAuthor_id(UUID.fromString(rs.getString("author_id")));
         schedule.setCreated(rs.getTimestamp("created").toLocalDateTime());

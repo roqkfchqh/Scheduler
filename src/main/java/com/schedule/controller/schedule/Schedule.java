@@ -8,7 +8,6 @@ import java.util.UUID;
 @Getter
 @Setter
 @Builder
-@ToString
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
 public class Schedule {

@@ -19,7 +19,7 @@ public class AuthorDao {
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
             PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)){
 
-            pstmt.setString(1, author.getId().toString());
+            pstmt.setObject(1, author.getId());
             pstmt.setString(2, author.getIpAddress());
             pstmt.setString(3, author.getEmail());
             pstmt.setString(4, author.getName());
@@ -42,7 +42,7 @@ public class AuthorDao {
             pstmt.setString(2, author.getIpAddress());
             pstmt.setString(3, author.getPassword());
             pstmt.setString(4, author.getEmail());
-            pstmt.setString(5, author.getId().toString());
+            pstmt.setObject(5, author.getId());
 
 
             int rowsUpdated = pstmt.executeUpdate();
@@ -61,7 +61,7 @@ public class AuthorDao {
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
             PreparedStatement pstmt = conn.prepareStatement(sql)){
 
-            pstmt.setString(1, authorId.toString());
+            pstmt.setObject(1, authorId);
 
             int rowsDeleted = pstmt.executeUpdate();
             if(rowsDeleted == 0){
@@ -79,7 +79,7 @@ public class AuthorDao {
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
             PreparedStatement pstmt = conn.prepareStatement(sql)){
 
-            pstmt.setString(1, authorId.toString());
+            pstmt.setObject(1, authorId);
 
             try(ResultSet rs = pstmt.executeQuery()){
                 if(rs.next()){
@@ -97,7 +97,7 @@ public class AuthorDao {
 
     private Author mapResultSetToAuthor(ResultSet rs) throws SQLException{
         Author author = new Author();
-        author.setId(UUID.fromString(rs.getString("id")));
+        author.setId((UUID) rs.getObject("id"));
         author.setName(rs.getString("name"));
         author.setEmail(rs.getString("email"));
         author.setPassword(rs.getString("password"));
