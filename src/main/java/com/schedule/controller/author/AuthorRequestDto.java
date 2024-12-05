@@ -1,4 +1,4 @@
 package com.schedule.controller.author;
 
-public class AuthorDb {
+public class AuthorRequestDto {
 }

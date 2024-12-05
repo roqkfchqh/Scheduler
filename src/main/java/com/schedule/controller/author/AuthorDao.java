@@ -1,4 +1,4 @@
 package com.schedule.controller.author;
 
-public interface AuthorRepository {
+public class AuthorDao {
 }

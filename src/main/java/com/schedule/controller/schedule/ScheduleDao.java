@@ -1,6 +1,7 @@
 package com.schedule.controller.schedule;
 
-import com.schedule.controller.common.BadInputException;
+import com.schedule.controller.common.exception.CustomException;
+import com.schedule.controller.common.exception.ErrorCode;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -32,7 +33,7 @@ public class ScheduleDao {
             pstmt.executeUpdate();
 
         }catch(SQLException e){
-            throw new BadInputException("오류요" + e.getMessage());
+            throw new CustomException(ErrorCode.BAD_GATEWAY);
         }
     }
 
@@ -50,11 +51,11 @@ public class ScheduleDao {
 
             int rowsUpdated = pstmt.executeUpdate();
             if(rowsUpdated == 0){
-                throw new BadInputException("오류요");
+                throw new CustomException(ErrorCode.BAD_GATEWAY);
             }
 
         }catch(SQLException e){
-            throw new BadInputException("오류요" + e.getMessage());
+            throw new CustomException(ErrorCode.BAD_GATEWAY);
         }
     }
 
@@ -73,7 +74,7 @@ public class ScheduleDao {
             }
 
         }catch(SQLException e){
-            throw new BadInputException("오류요" + e.getMessage());
+            throw new CustomException(ErrorCode.BAD_GATEWAY);
         }
     }
 
@@ -108,7 +109,7 @@ public class ScheduleDao {
                 }
             }
         }catch(SQLException e) {
-            throw new BadInputException("오류요" + e.getMessage());
+            throw new CustomException(ErrorCode.BAD_GATEWAY);
         }
         return schedules;
     }
@@ -128,7 +129,7 @@ public class ScheduleDao {
                 }
             }
         }catch(SQLException e){
-            throw new BadInputException("오류요" + e.getMessage());
+            throw new CustomException(ErrorCode.BAD_GATEWAY);
         }
         return null;
     }

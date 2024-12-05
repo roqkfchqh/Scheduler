@@ -1,6 +1,7 @@
 package com.schedule.controller.schedule;
 
-import com.schedule.controller.common.BadInputException;
+import com.schedule.controller.common.exception.CustomException;
+import com.schedule.controller.common.exception.ErrorCode;
 import com.schedule.controller.schedule.dto.CombinedRequestDto;
 import com.schedule.controller.schedule.dto.PasswordRequestDto;
 import com.schedule.controller.schedule.dto.ScheduleMapper;
@@ -31,7 +32,7 @@ public class ScheduleService {
     public List<ScheduleResponseDto> getAllSchedules(String name, LocalDate date){
         List<Schedule> schedules = scheduleDao.findAll(name, date);
         if(schedules == null){
-            throw new BadInputException("오류요");
+            throw new CustomException(ErrorCode.NOT_FOUND);
         }
         return schedules.stream()
                 .map(ScheduleMapper::toDto)
@@ -41,7 +42,7 @@ public class ScheduleService {
     public ScheduleResponseDto getSchedule(UUID id){
         Schedule schedule = scheduleDao.findById(id);
         if(schedule == null){
-            throw new BadInputException("오류요");
+            throw new CustomException(ErrorCode.NOT_FOUND);
         }
         return ScheduleMapper.toDto(schedule);
     }
@@ -49,11 +50,11 @@ public class ScheduleService {
     public ScheduleResponseDto updateSchedule(UUID id, CombinedRequestDto dto){
         Schedule schedule = scheduleDao.findById(id);
         if(schedule == null){
-            throw new BadInputException("오류요");
+            throw new CustomException(ErrorCode.NOT_FOUND);
         }
 
         if (!passwordEncoder.matches(dto.getPasswordRequestDto().getPassword(), schedule.getPassword())) {
-            throw new BadInputException("오류요");
+            throw new CustomException(ErrorCode.BAD_REQUEST);
         }
 
         schedule.updateSchedule(
@@ -67,10 +68,10 @@ public class ScheduleService {
     public void deleteSchedule(UUID id, PasswordRequestDto dto){
         Schedule schedule = scheduleDao.findById(id);
         if(schedule == null){
-            throw new BadInputException("오류요");
+            throw new CustomException(ErrorCode.NOT_FOUND);
         }
         if (!passwordEncoder.matches(dto.getPassword(), schedule.getPassword())) {
-            throw new BadInputException("오류요");
+            throw new CustomException(ErrorCode.BAD_REQUEST);
         }
         scheduleDao.deleteByID(id);
     }
