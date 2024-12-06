@@ -4,6 +4,7 @@ import com.schedule.controller.author.dto.AuthorRequestDto;
 import com.schedule.controller.author.dto.AuthorResponseDto;
 import com.schedule.controller.author.dto.CombinedAuthorRequestDto;
 import com.schedule.controller.author.dto.PasswordRequestDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,17 +20,17 @@ public class AuthorController {
     private final AuthorService authorService;
 
     @PostMapping
-    public ResponseEntity<AuthorResponseDto> createAuthor(@RequestBody AuthorRequestDto dto) {
+    public ResponseEntity<AuthorResponseDto> createAuthor(@Valid @RequestBody AuthorRequestDto dto) {
         return ResponseEntity.ok(authorService.createAuthor(dto));
     }
 
     @PostMapping("/{authorId}/update")
-    public ResponseEntity<AuthorResponseDto> updateAuthor(@PathVariable UUID authorId, @RequestBody CombinedAuthorRequestDto dto) {
+    public ResponseEntity<AuthorResponseDto> updateAuthor(@PathVariable UUID authorId, @Valid @RequestBody CombinedAuthorRequestDto dto) {
         return ResponseEntity.ok(authorService.updateAuthor(authorId, dto));
     }
 
     @PostMapping("/{authorId}/delete")
-    public ResponseEntity<AuthorResponseDto> deleteAuthor(@PathVariable UUID authorId, @RequestBody PasswordRequestDto dto){
+    public ResponseEntity<AuthorResponseDto> deleteAuthor(@PathVariable UUID authorId, @Valid @RequestBody PasswordRequestDto dto){
         authorService.deleteAuthor(authorId, dto);
         return ResponseEntity.noContent().build();
     }

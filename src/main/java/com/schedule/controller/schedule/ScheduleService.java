@@ -29,12 +29,23 @@ public class ScheduleService {
         return ScheduleMapper.toDto(schedule);
     }
 
-    public List<ScheduleResponseDto> getAllSchedules(String authorName, LocalDate date){
+    public List<ScheduleResponseDto> getPagedSchedules(String authorName, LocalDate date, int page, int size){
+        if(page < 1 || size < 1){
+            throw new CustomException(ErrorCode.BAD_GATEWAY);
+        }
+
         List<Schedule> schedules = scheduleDao.findAllSchedule(authorName, date);
         if(schedules == null){
             throw new CustomException(ErrorCode.NOT_FOUND);
         }
-        return schedules.stream()
+
+        int start = (page - 1) * size;
+        int end = Math.min(start + size, schedules.size());
+        if(start >= schedules.size()){
+            return List.of();
+        }
+
+        return schedules.subList(start, end).stream()
                 .map(ScheduleMapper::toDto)
                 .collect(Collectors.toList());
     }

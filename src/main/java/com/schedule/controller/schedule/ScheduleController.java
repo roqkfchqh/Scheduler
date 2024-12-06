@@ -2,6 +2,7 @@ package com.schedule.controller.schedule;
 
 import com.schedule.controller.schedule.dto.ScheduleRequestDto;
 import com.schedule.controller.schedule.dto.ScheduleResponseDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,13 +19,13 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
 
     @PostMapping
-    public ResponseEntity<ScheduleResponseDto> saveSchedule(@RequestBody ScheduleRequestDto dto) {
+    public ResponseEntity<ScheduleResponseDto> saveSchedule(@Valid @RequestBody ScheduleRequestDto dto) {
         return ResponseEntity.ok(scheduleService.saveSchedule(dto));
     }
 
     @GetMapping
-    public ResponseEntity<List<ScheduleResponseDto>> getSchedules(@RequestParam(required = false) String authorName, @RequestParam(required = false) LocalDate date) {
-        return ResponseEntity.ok(scheduleService.getAllSchedules(authorName, date));
+    public ResponseEntity<List<ScheduleResponseDto>> getPagedSchedules(@RequestParam(required = false) String authorName, @RequestParam(required = false) LocalDate date, @RequestParam int page, @RequestParam int size) {
+        return ResponseEntity.ok(scheduleService.getPagedSchedules(authorName, date, page, size));
     }
 
     @GetMapping("/{scheduleId}")
@@ -33,12 +34,12 @@ public class ScheduleController {
     }
 
     @PostMapping("/{scheduleId}/update")
-    public ResponseEntity<ScheduleResponseDto> updateSchedule(@PathVariable UUID scheduleId, @RequestBody ScheduleRequestDto dto, @RequestHeader String authorPassword) {
+    public ResponseEntity<ScheduleResponseDto> updateSchedule(@PathVariable UUID scheduleId, @Valid @RequestBody ScheduleRequestDto dto, @Valid @RequestHeader String authorPassword) {
         return ResponseEntity.ok(scheduleService.updateSchedule(scheduleId, dto, authorPassword));
     }
 
     @PostMapping("/{scheduleId}/delete")
-    public ResponseEntity<ScheduleResponseDto> deleteSchedule(@PathVariable UUID scheduleId, @RequestBody String authorPassword) {
+    public ResponseEntity<ScheduleResponseDto> deleteSchedule(@PathVariable UUID scheduleId, @Valid @RequestBody String authorPassword) {
         scheduleService.deleteSchedule(scheduleId, authorPassword);
         return ResponseEntity.noContent().build();
     }
