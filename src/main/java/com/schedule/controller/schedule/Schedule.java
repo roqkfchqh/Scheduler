@@ -1,5 +1,6 @@
 package com.schedule.controller.schedule;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -26,7 +27,11 @@ public class Schedule {
     private UUID id;
     private UUID author_id;
     private String content;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDateTime created;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDateTime updated;
 
     public void updateSchedule(String content) {
