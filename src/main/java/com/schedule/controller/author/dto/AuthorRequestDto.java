@@ -1,6 +1,7 @@
 package com.schedule.controller.author.dto;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -21,5 +22,6 @@ public class AuthorRequestDto {
     private String email;
 
     @NotNull(message = "비밀번호를 입력해주세요.")
+    @NotBlank(message = "비밀번호를 입력해주세요.")
     private String password;
 }

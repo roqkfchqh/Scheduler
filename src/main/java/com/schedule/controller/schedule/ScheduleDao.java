@@ -32,7 +32,7 @@ public class ScheduleDao {
 
             pstmt.setObject(1, schedule.getId());
             pstmt.setString(2, schedule.getContent());
-            pstmt.setString(3, schedule.getAuthor_id().toString());
+            pstmt.setObject(3, schedule.getAuthor_id());
             pstmt.setTimestamp(4, Timestamp.valueOf(schedule.getCreated()));
             pstmt.setTimestamp(5, Timestamp.valueOf(schedule.getUpdated()));
 

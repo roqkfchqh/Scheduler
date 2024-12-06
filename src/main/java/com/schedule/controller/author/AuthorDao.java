@@ -20,10 +20,15 @@ public class AuthorDao {
     private static final String PASSWORD = System.getenv("DB_PASSWORD");
 
     public void createAuthor(Author author) throws CustomSQLException {
-        String sql = "INSERT INTO author (id, email, name, password) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO author (id, email, name, password) VALUES (?, ?, ?, ?)";
 
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
             PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)){
+
+            System.out.println(author.getId());
+            System.out.println(author.getEmail());
+            System.out.println(author.getName());
+            System.out.println(author.getPassword());
 
             pstmt.setObject(1, author.getId());
             pstmt.setString(2, author.getEmail());
@@ -113,8 +118,10 @@ public class AuthorDao {
 
         if(e.getSQLState().startsWith("08")){
             throw new CustomSQLException(SQLErrorCode.DATABASE_CONNECTION_ERROR, e);
-        }else if(e.getSQLState().startsWith("22")){
+        }else if(e.getSQLState().startsWith("22")) {
             throw new CustomSQLException(SQLErrorCode.DATA_TYPE_ERROR, e);
+        }else if(e.getSQLState().contains("23505")){
+            throw new CustomSQLException(SQLErrorCode.UNIQUE_KEY_DUPLICATE, e);
         }else{
             throw new CustomSQLException(SQLErrorCode.UNKNOWN_DATABASE_ERROR, e);
         }

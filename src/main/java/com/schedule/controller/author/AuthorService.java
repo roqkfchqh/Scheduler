@@ -17,7 +17,7 @@ public class AuthorService {
     private final AuthorDao authorDao;
     private final PasswordEncoder passwordEncoder;
 
-    public AuthorResponseDto createAuthor( AuthorRequestDto dto) throws CustomSQLException {
+    public AuthorResponseDto createAuthor(AuthorRequestDto dto) throws CustomSQLException {
         String encodedPassword = passwordEncoder.encode(dto.getPassword());
         Author author = AuthorMapper.toEntity(dto, encodedPassword);
 

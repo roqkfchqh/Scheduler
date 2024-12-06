@@ -29,8 +29,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(sqlErrorCode.getStatus())
                 .body(Map.of(
                         "⛔: ", sqlErrorCode.getMessage(),
-                        "에러코드: ", sqlErrorCode.getStatus(),
-                        "에러정보: ", e.getMessage()
+                        "에러코드: ", sqlErrorCode.getStatus()
                 ));
     }
 
