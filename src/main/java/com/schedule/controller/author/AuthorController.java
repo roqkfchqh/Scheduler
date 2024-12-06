@@ -4,7 +4,6 @@ import com.schedule.controller.author.dto.AuthorRequestDto;
 import com.schedule.controller.author.dto.AuthorResponseDto;
 import com.schedule.controller.author.dto.CombinedAuthorRequestDto;
 import com.schedule.controller.author.dto.PasswordRequestDto;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,15 +19,13 @@ public class AuthorController {
     private final AuthorService authorService;
 
     @PostMapping
-    public ResponseEntity<AuthorResponseDto> createAuthor(HttpServletRequest request, @RequestBody AuthorRequestDto dto) {
-        String clientIp = getClientIp(request);
-        return ResponseEntity.ok(authorService.createAuthor(clientIp, dto));
+    public ResponseEntity<AuthorResponseDto> createAuthor(@RequestBody AuthorRequestDto dto) {
+        return ResponseEntity.ok(authorService.createAuthor(dto));
     }
 
     @PostMapping("/{authorId}/update")
-    public ResponseEntity<AuthorResponseDto> updateAuthor(HttpServletRequest request, @PathVariable UUID authorId, @RequestBody CombinedAuthorRequestDto dto) {
-        String clientIp = getClientIp(request);
-        return ResponseEntity.ok(authorService.updateAuthor(clientIp, authorId, dto));
+    public ResponseEntity<AuthorResponseDto> updateAuthor(@PathVariable UUID authorId, @RequestBody CombinedAuthorRequestDto dto) {
+        return ResponseEntity.ok(authorService.updateAuthor(authorId, dto));
     }
 
     @PostMapping("/{authorId}/delete")
@@ -43,14 +40,6 @@ public class AuthorController {
         String password = payload.get("password").toString();
         boolean isValid = authorService.validateAuthor(authorId, password);
         return ResponseEntity.ok(isValid);
-    }
-
-    public String getClientIp(HttpServletRequest request) {
-        String ipAddress = request.getHeader("X-Forwarded-For");
-        if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
-            ipAddress = request.getRemoteAddr();
-        }
-        return ipAddress.split(",")[0].trim();
     }
 
 }

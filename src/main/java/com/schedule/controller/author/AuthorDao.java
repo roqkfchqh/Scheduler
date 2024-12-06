@@ -14,16 +14,15 @@ public class AuthorDao {
     private static final String PASSWORD = System.getenv("DB_PASSWORD");
 
     public void createAuthor(Author author){
-        String sql = "INSERT INTO author (id, ip_address, email, name, password) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO author (id, email, name, password) VALUES (?, ?, ?, ?, ?)";
 
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
             PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)){
 
             pstmt.setObject(1, author.getId());
-            pstmt.setString(2, author.getIpAddress());
-            pstmt.setString(3, author.getEmail());
-            pstmt.setString(4, author.getName());
-            pstmt.setString(5, author.getPassword());
+            pstmt.setString(2, author.getEmail());
+            pstmt.setString(3, author.getName());
+            pstmt.setString(4, author.getPassword());
 
             pstmt.executeUpdate();
 
@@ -33,16 +32,15 @@ public class AuthorDao {
     }
 
     public void updateAuthor(Author author){
-        String sql = "UPDATE author SET name = ?, ip_address = ?, password = ?, email = ? WHERE id = ?";
+        String sql = "UPDATE author SET name = ?, password = ?, email = ? WHERE id = ?";
 
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
             PreparedStatement pstmt = conn.prepareStatement(sql)){
 
             pstmt.setString(1, author.getName());
-            pstmt.setString(2, author.getIpAddress());
-            pstmt.setString(3, author.getPassword());
-            pstmt.setString(4, author.getEmail());
-            pstmt.setObject(5, author.getId());
+            pstmt.setString(2, author.getPassword());
+            pstmt.setString(3, author.getEmail());
+            pstmt.setObject(4, author.getId());
 
 
             int rowsUpdated = pstmt.executeUpdate();
@@ -74,7 +72,7 @@ public class AuthorDao {
     }
 
     public Author findAuthorById(UUID authorId){
-        String sql = "SELECT id, name, email, password, ip_address FROM author WHERE id = ?";
+        String sql = "SELECT id, name, email, password FROM author WHERE id = ?";
 
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
             PreparedStatement pstmt = conn.prepareStatement(sql)){
@@ -101,7 +99,6 @@ public class AuthorDao {
         author.setName(rs.getString("name"));
         author.setEmail(rs.getString("email"));
         author.setPassword(rs.getString("password"));
-        author.setIpAddress(rs.getString("ip_address"));
         return author;
     }
 }

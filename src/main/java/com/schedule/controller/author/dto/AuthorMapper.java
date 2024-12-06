@@ -12,13 +12,11 @@ public class AuthorMapper {
                 .id(author.getId())
                 .name(author.getName())
                 .email(author.getEmail())
-                .ipAddress(author.getIpAddress())
                 .build();
     }
 
-    public static Author toEntity(AuthorRequestDto dto, String encodedPassword, String clientIp) {
+    public static Author toEntity(AuthorRequestDto dto, String encodedPassword) {
         return Author.create(
-                clientIp,
                 dto.getEmail(),
                 dto.getName(),
                 encodedPassword

@@ -14,5 +14,4 @@ public class AuthorResponseDto {
     private UUID id;
     private String name;
     private String email;
-    private String ipAddress;
 }
