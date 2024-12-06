@@ -1,8 +1,13 @@
 package com.schedule.controller.schedule;
 
 import com.schedule.controller.common.exception.CustomException;
+import com.schedule.controller.common.exception.CustomSQLException;
 import com.schedule.controller.common.exception.ErrorCode;
+import com.schedule.controller.common.exception.SQLErrorCode;
 import org.springframework.stereotype.Repository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -13,12 +18,13 @@ import java.util.UUID;
 @Repository
 public class ScheduleDao {
 
+    private static final Logger logger = LoggerFactory.getLogger(ScheduleDao.class);
     private static final String URL = "jdbc:postgresql://localhost:5432/schedule_db";
     private static final String USER = "postgres";
     private static final String PASSWORD = System.getenv("DB_PASSWORD");
 
     //saveSchedule
-    public void saveSchedule(Schedule schedule){
+    public void saveSchedule(Schedule schedule) throws CustomSQLException {
         String sql = "INSERT INTO schedule (id, content, author_id, created, updated) VALUES (?, ?, ?, ?, ?)";
 
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
@@ -33,12 +39,12 @@ public class ScheduleDao {
             pstmt.executeUpdate();
 
         }catch(SQLException e){
-            throw new CustomException(ErrorCode.BAD_GATEWAY);
+            sqlExtracted(e);
         }
     }
 
     //updateSchedule
-    public void updateSchedule(Schedule schedule){
+    public void updateSchedule(Schedule schedule) throws CustomSQLException {
         String sql = "UPDATE schedule SET content = ?, updated = ? WHERE id = ?";
 
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
@@ -54,12 +60,12 @@ public class ScheduleDao {
             }
 
         }catch(SQLException e){
-            throw new CustomException(ErrorCode.BAD_GATEWAY);
+            sqlExtracted(e);
         }
     }
 
     //delete
-    public void deleteSchedule(UUID scheduleId){
+    public void deleteSchedule(UUID scheduleId) throws CustomSQLException {
         String sql = "DELETE FROM schedule WHERE id = ?";
 
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
@@ -73,12 +79,12 @@ public class ScheduleDao {
             }
 
         }catch(SQLException e){
-            throw new CustomException(ErrorCode.BAD_GATEWAY);
+            sqlExtracted(e);
         }
     }
 
     //모두조회
-    public List<Schedule> findAllSchedule(String authorName, LocalDate date){
+    public List<Schedule> findAllSchedule(String authorName, LocalDate date) throws CustomSQLException {
         String sql = "SELECT id, name, content, password, created, updated FROM schedule WHERE 1=1";
         List<Schedule> schedules = new ArrayList<>();
 
@@ -103,21 +109,21 @@ public class ScheduleDao {
             }
 
             try(ResultSet rs = pstmt.executeQuery()){
-                while (rs.next()) {
+                while(rs.next()){
                     schedules.add(mapResultSetToSchedule(rs));
                 }
                 if(!rs.next()){
                     throw new CustomException(ErrorCode.BAD_GATEWAY);
                 }
             }
-        }catch(SQLException e) {
-            throw new CustomException(ErrorCode.BAD_GATEWAY);
+        }catch(SQLException e){
+            sqlExtracted(e);
         }
         return schedules;
     }
 
     //id 로 조회
-    public Schedule findScheduleById(UUID scheduleId){
+    public Schedule findScheduleById(UUID scheduleId) throws CustomSQLException {
         String sql = "SELECT id, content, author_id, created, updated FROM schedule WHERE id = ?";
 
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
@@ -128,13 +134,12 @@ public class ScheduleDao {
             try(ResultSet rs = pstmt.executeQuery()){
                 if(rs.next()){
                     return mapResultSetToSchedule(rs);
-                }
-                if(!rs.next()){
+                }else{
                     throw new CustomException(ErrorCode.BAD_GATEWAY);
                 }
             }
         }catch(SQLException e){
-            throw new CustomException(ErrorCode.BAD_GATEWAY);
+            sqlExtracted(e);
         }
         return null;
     }
@@ -148,5 +153,18 @@ public class ScheduleDao {
         schedule.setCreated(rs.getTimestamp("created").toLocalDateTime());
         schedule.setUpdated(rs.getTimestamp("updated").toLocalDateTime());
         return schedule;
+    }
+
+    private static void sqlExtracted(SQLException e) throws CustomSQLException {
+        logger.error("SQL Exception 발생: SQLState={}, ErrorCode={}, Message={}",
+                e.getSQLState(), e.getErrorCode(), e.getMessage(), e);
+
+        if(e.getSQLState().startsWith("08")){
+            throw new CustomSQLException(SQLErrorCode.DATABASE_CONNECTION_ERROR, e);
+        }else if(e.getSQLState().startsWith("22")){
+            throw new CustomSQLException(SQLErrorCode.DATA_TYPE_ERROR, e);
+        }else{
+            throw new CustomSQLException(SQLErrorCode.UNKNOWN_DATABASE_ERROR, e);
+        }
     }
 }

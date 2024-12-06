@@ -1,7 +1,11 @@
 package com.schedule.controller.author;
 
 import com.schedule.controller.common.exception.CustomException;
+import com.schedule.controller.common.exception.CustomSQLException;
 import com.schedule.controller.common.exception.ErrorCode;
+import com.schedule.controller.common.exception.SQLErrorCode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -9,11 +13,13 @@ import java.util.UUID;
 
 @Repository
 public class AuthorDao {
+
+    private static final Logger logger = LoggerFactory.getLogger(AuthorDao.class);
     private static final String URL ="jdbc:postgresql://localhost:5432/schedule_db";
     private static final String USER = "postgres";
     private static final String PASSWORD = System.getenv("DB_PASSWORD");
 
-    public void createAuthor(Author author){
+    public void createAuthor(Author author) throws CustomSQLException {
         String sql = "INSERT INTO author (id, email, name, password) VALUES (?, ?, ?, ?, ?)";
 
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
@@ -27,11 +33,11 @@ public class AuthorDao {
             pstmt.executeUpdate();
 
         }catch(SQLException e){
-            throw new CustomException(ErrorCode.BAD_GATEWAY);
+            sqlExtracted(e);
         }
     }
 
-    public void updateAuthor(Author author){
+    public void updateAuthor(Author author) throws CustomSQLException {
         String sql = "UPDATE author SET name = ?, password = ?, email = ? WHERE id = ?";
 
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
@@ -49,11 +55,11 @@ public class AuthorDao {
             }
 
         }catch(SQLException e){
-            throw new CustomException(ErrorCode.BAD_GATEWAY);
+            sqlExtracted(e);
         }
     }
 
-    public void deleteAuthor(UUID authorId){
+    public void deleteAuthor(UUID authorId) throws CustomSQLException {
         String sql = "DELETE FROM author WHERE id = ?";
 
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
@@ -67,11 +73,11 @@ public class AuthorDao {
             }
 
         }catch(SQLException e){
-            throw new CustomException(ErrorCode.BAD_GATEWAY);
+            sqlExtracted(e);
         }
     }
 
-    public Author findAuthorById(UUID authorId){
+    public Author findAuthorById(UUID authorId) throws CustomSQLException {
         String sql = "SELECT id, name, email, password FROM author WHERE id = ?";
 
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
@@ -82,13 +88,12 @@ public class AuthorDao {
             try(ResultSet rs = pstmt.executeQuery()){
                 if(rs.next()){
                     return mapResultSetToAuthor(rs);
-                }
-                if(!rs.next()){
+                }else{
                     throw new CustomException(ErrorCode.BAD_GATEWAY);
                 }
             }
         }catch(SQLException e){
-            throw new CustomException(ErrorCode.BAD_GATEWAY);
+            sqlExtracted(e);
         }
         return null;
     }
@@ -100,5 +105,18 @@ public class AuthorDao {
         author.setEmail(rs.getString("email"));
         author.setPassword(rs.getString("password"));
         return author;
+    }
+
+    private static void sqlExtracted(SQLException e) throws CustomSQLException {
+        logger.error("SQL Exception 발생: SQLState={}, ErrorCode={}, Message={}",
+                e.getSQLState(), e.getErrorCode(), e.getMessage(), e);
+
+        if(e.getSQLState().startsWith("08")){
+            throw new CustomSQLException(SQLErrorCode.DATABASE_CONNECTION_ERROR, e);
+        }else if(e.getSQLState().startsWith("22")){
+            throw new CustomSQLException(SQLErrorCode.DATA_TYPE_ERROR, e);
+        }else{
+            throw new CustomSQLException(SQLErrorCode.UNKNOWN_DATABASE_ERROR, e);
+        }
     }
 }

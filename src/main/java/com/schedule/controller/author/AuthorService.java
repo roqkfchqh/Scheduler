@@ -2,6 +2,7 @@ package com.schedule.controller.author;
 
 import com.schedule.controller.author.dto.*;
 import com.schedule.controller.common.exception.CustomException;
+import com.schedule.controller.common.exception.CustomSQLException;
 import com.schedule.controller.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,7 +17,7 @@ public class AuthorService {
     private final AuthorDao authorDao;
     private final PasswordEncoder passwordEncoder;
 
-    public AuthorResponseDto createAuthor( AuthorRequestDto dto) {
+    public AuthorResponseDto createAuthor( AuthorRequestDto dto) throws CustomSQLException {
         String encodedPassword = passwordEncoder.encode(dto.getPassword());
         Author author = AuthorMapper.toEntity(dto, encodedPassword);
 
@@ -24,7 +25,7 @@ public class AuthorService {
         return AuthorMapper.toDto(author);
     }
 
-    public AuthorResponseDto updateAuthor(UUID authorId, CombinedAuthorRequestDto dto){
+    public AuthorResponseDto updateAuthor(UUID authorId, CombinedAuthorRequestDto dto) throws CustomSQLException {
         Author author = authorDao.findAuthorById(authorId);
         validateAuthor(authorId, dto.getPasswordDto().getPassword());
         String encodedPassword = passwordEncoder.encode(dto.getAuthorDto().getPassword());
@@ -38,12 +39,12 @@ public class AuthorService {
         return AuthorMapper.toDto(author);
     }
 
-    public void deleteAuthor(UUID authorId, PasswordRequestDto dto) {
+    public void deleteAuthor(UUID authorId, PasswordRequestDto dto) throws CustomSQLException {
         validateAuthor(authorId, dto.getPassword());
         authorDao.deleteAuthor(authorId);
     }
 
-    public boolean validateAuthor(UUID authorId, String password){
+    public boolean validateAuthor(UUID authorId, String password) throws CustomSQLException {
         Author author = authorDao.findAuthorById(authorId);
         if(author == null){
             throw new CustomException(ErrorCode.USER_NOT_FOUND);

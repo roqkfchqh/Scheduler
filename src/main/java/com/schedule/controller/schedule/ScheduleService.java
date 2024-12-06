@@ -1,6 +1,7 @@
 package com.schedule.controller.schedule;
 
 import com.schedule.controller.common.exception.CustomException;
+import com.schedule.controller.common.exception.CustomSQLException;
 import com.schedule.controller.common.exception.ErrorCode;
 import com.schedule.controller.schedule.dto.ScheduleMapper;
 import com.schedule.controller.schedule.dto.ScheduleRequestDto;
@@ -23,15 +24,15 @@ public class ScheduleService {
     private final ScheduleDao scheduleDao;
     private final RestTemplate restTemplate;
 
-    public ScheduleResponseDto saveSchedule(ScheduleRequestDto dto){
+    public ScheduleResponseDto saveSchedule(ScheduleRequestDto dto) throws CustomSQLException {
         Schedule schedule = ScheduleMapper.toEntity(dto, UUID.randomUUID());
         scheduleDao.saveSchedule(schedule);
         return ScheduleMapper.toDto(schedule);
     }
 
-    public List<ScheduleResponseDto> getPagedSchedules(String authorName, LocalDate date, int page, int size){
+    public List<ScheduleResponseDto> getPagedSchedules(String authorName, LocalDate date, int page, int size) throws CustomSQLException {
         if(page < 1 || size < 1){
-            throw new CustomException(ErrorCode.BAD_GATEWAY);
+            throw new CustomException(ErrorCode.PAGING_ERROR);
         }
 
         List<Schedule> schedules = scheduleDao.findAllSchedule(authorName, date);
@@ -50,7 +51,7 @@ public class ScheduleService {
                 .collect(Collectors.toList());
     }
 
-    public ScheduleResponseDto getSchedule(UUID scheduleId){
+    public ScheduleResponseDto getSchedule(UUID scheduleId) throws CustomSQLException {
         Schedule schedule = scheduleDao.findScheduleById(scheduleId);
         if(schedule == null){
             throw new CustomException(ErrorCode.NOT_FOUND);
@@ -58,7 +59,7 @@ public class ScheduleService {
         return ScheduleMapper.toDto(schedule);
     }
 
-    public ScheduleResponseDto updateSchedule(UUID scheduleId, ScheduleRequestDto dto, String authorPassword){
+    public ScheduleResponseDto updateSchedule(UUID scheduleId, ScheduleRequestDto dto, String authorPassword) throws CustomSQLException {
         Schedule schedule = validateIdAndPassword(scheduleId, authorPassword);
         schedule.updateSchedule(
                 dto.getContent()
@@ -67,12 +68,12 @@ public class ScheduleService {
         return ScheduleMapper.toDto(schedule);
     }
 
-    public void deleteSchedule(UUID scheduleId, String authorPassword){
+    public void deleteSchedule(UUID scheduleId, String authorPassword) throws CustomSQLException {
         validateIdAndPassword(scheduleId, authorPassword);
         scheduleDao.deleteSchedule(scheduleId);
     }
 
-    private Schedule validateIdAndPassword(UUID scheduleId, String authorPassword) {
+    private Schedule validateIdAndPassword(UUID scheduleId, String authorPassword) throws CustomSQLException {
         Schedule schedule = scheduleDao.findScheduleById(scheduleId);
         if(schedule == null){
             throw new CustomException(ErrorCode.NOT_FOUND);

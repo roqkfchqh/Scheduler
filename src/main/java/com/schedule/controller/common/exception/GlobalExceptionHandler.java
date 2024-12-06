@@ -23,6 +23,17 @@ public class GlobalExceptionHandler {
                 ));
     }
 
+    @ExceptionHandler(CustomSQLException.class)
+    public ResponseEntity<Map<String, Object>> handleCustomSQLException(CustomSQLException e){
+        SQLErrorCode sqlErrorCode = e.getSqlErrorCode();
+        return ResponseEntity.status(sqlErrorCode.getStatus())
+                .body(Map.of(
+                        "⛔: ", sqlErrorCode.getMessage(),
+                        "에러코드: ", sqlErrorCode.getStatus(),
+                        "에러정보: ", e.getMessage()
+                ));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationExceptions(MethodArgumentNotValidException e){
         Map<String, String> errorMessages = new HashMap<>();

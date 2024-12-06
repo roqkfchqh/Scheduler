@@ -1,5 +1,6 @@
 package com.schedule.controller.schedule;
 
+import com.schedule.controller.common.exception.CustomSQLException;
 import com.schedule.controller.schedule.dto.ScheduleRequestDto;
 import com.schedule.controller.schedule.dto.ScheduleResponseDto;
 import jakarta.validation.Valid;
@@ -19,27 +20,27 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
 
     @PostMapping
-    public ResponseEntity<ScheduleResponseDto> saveSchedule(@Valid @RequestBody ScheduleRequestDto dto) {
+    public ResponseEntity<ScheduleResponseDto> saveSchedule(@Valid @RequestBody ScheduleRequestDto dto) throws CustomSQLException {
         return ResponseEntity.ok(scheduleService.saveSchedule(dto));
     }
 
     @GetMapping
-    public ResponseEntity<List<ScheduleResponseDto>> getPagedSchedules(@RequestParam(required = false) String authorName, @RequestParam(required = false) LocalDate date, @RequestParam int page, @RequestParam int size) {
+    public ResponseEntity<List<ScheduleResponseDto>> getPagedSchedules(@RequestParam(required = false) String authorName, @RequestParam(required = false) LocalDate date, @RequestParam int page, @RequestParam int size) throws CustomSQLException {
         return ResponseEntity.ok(scheduleService.getPagedSchedules(authorName, date, page, size));
     }
 
     @GetMapping("/{scheduleId}")
-    public ResponseEntity<ScheduleResponseDto> getSchedule(@PathVariable UUID scheduleId) {
+    public ResponseEntity<ScheduleResponseDto> getSchedule(@PathVariable UUID scheduleId) throws CustomSQLException {
         return ResponseEntity.ok(scheduleService.getSchedule(scheduleId));
     }
 
     @PostMapping("/{scheduleId}/update")
-    public ResponseEntity<ScheduleResponseDto> updateSchedule(@PathVariable UUID scheduleId, @Valid @RequestBody ScheduleRequestDto dto, @Valid @RequestHeader String authorPassword) {
+    public ResponseEntity<ScheduleResponseDto> updateSchedule(@PathVariable UUID scheduleId, @Valid @RequestBody ScheduleRequestDto dto, @Valid @RequestHeader String authorPassword) throws CustomSQLException {
         return ResponseEntity.ok(scheduleService.updateSchedule(scheduleId, dto, authorPassword));
     }
 
     @PostMapping("/{scheduleId}/delete")
-    public ResponseEntity<ScheduleResponseDto> deleteSchedule(@PathVariable UUID scheduleId, @Valid @RequestBody String authorPassword) {
+    public ResponseEntity<ScheduleResponseDto> deleteSchedule(@PathVariable UUID scheduleId, @Valid @RequestBody String authorPassword) throws CustomSQLException {
         scheduleService.deleteSchedule(scheduleId, authorPassword);
         return ResponseEntity.noContent().build();
     }
