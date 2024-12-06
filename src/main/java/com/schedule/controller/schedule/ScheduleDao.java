@@ -113,7 +113,7 @@ public class ScheduleDao {
                     schedules.add(mapResultSetToSchedule(rs));
                 }
                 if(!rs.next()){
-                    throw new CustomException(ErrorCode.BAD_GATEWAY);
+                    throw new CustomException(ErrorCode.CONTENT_NOT_FOUND);
                 }
             }
         }catch(SQLException e){
@@ -135,7 +135,7 @@ public class ScheduleDao {
                 if(rs.next()){
                     return mapResultSetToSchedule(rs);
                 }else{
-                    throw new CustomException(ErrorCode.BAD_GATEWAY);
+                    throw new CustomException(ErrorCode.CONTENT_NOT_FOUND);
                 }
             }
         }catch(SQLException e){
@@ -149,7 +149,7 @@ public class ScheduleDao {
         Schedule schedule = new Schedule();
         schedule.setId((UUID) rs.getObject("id"));
         schedule.setContent(rs.getString("content"));
-        schedule.setAuthor_id(UUID.fromString(rs.getString("author_id")));
+        schedule.setAuthor_id((UUID)(rs.getObject("author_id")));
         schedule.setCreated(rs.getTimestamp("created").toLocalDateTime());
         schedule.setUpdated(rs.getTimestamp("updated").toLocalDateTime());
         return schedule;

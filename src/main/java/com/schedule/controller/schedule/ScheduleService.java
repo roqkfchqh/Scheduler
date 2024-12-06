@@ -75,19 +75,16 @@ public class ScheduleService {
 
     private Schedule validateIdAndPassword(UUID scheduleId, String authorPassword) throws CustomSQLException {
         Schedule schedule = scheduleDao.findScheduleById(scheduleId);
-        if(schedule == null){
-            throw new CustomException(ErrorCode.NOT_FOUND);
-        }
 
         try{
             String url = "http://localhost:8080/authors/validate-password";
             ResponseEntity<Boolean> response = restTemplate.postForEntity(
                     url,
-                    Map.of("id", schedule.getAuthor_id(), "password", authorPassword),
+                    Map.of("authorId", schedule.getAuthor_id(), "password", authorPassword),
                     Boolean.class);
 
             if(Boolean.FALSE.equals(response.getBody())){
-                throw new CustomException(ErrorCode.BAD_REQUEST);
+                throw new CustomException(ErrorCode.WRONG_PASSWORD);
             }
         }catch(Exception e){
             throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);

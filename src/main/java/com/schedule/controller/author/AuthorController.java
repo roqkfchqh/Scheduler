@@ -37,9 +37,9 @@ public class AuthorController {
     }
 
     @PostMapping("/validate-password")
-    public ResponseEntity<Boolean> validatePasswordForSchedule(@RequestBody Map<String, Object> payload) throws CustomSQLException {
-        UUID authorId = UUID.fromString(payload.get("uuid").toString());
-        String password = payload.get("password").toString();
+    public ResponseEntity<Boolean> validatePasswordForSchedule(@RequestBody Map<Object, String> payload) throws CustomSQLException {
+        UUID authorId = UUID.fromString((payload.get("authorId")));
+        String password = payload.get("password");
         boolean isValid = authorService.validateAuthor(authorId, password);
         return ResponseEntity.ok(isValid);
     }

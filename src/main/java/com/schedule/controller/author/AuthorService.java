@@ -49,10 +49,11 @@ public class AuthorService {
         if(author == null){
             throw new CustomException(ErrorCode.USER_NOT_FOUND);
         }
-        if(!passwordEncoder.matches(password, author.getPassword())){
-            throw new CustomException(ErrorCode.BAD_REQUEST);
+        if(passwordEncoder.matches(password, author.getPassword())){
+            return true;
+        }else{
+            throw new CustomException(ErrorCode.WRONG_PASSWORD);
         }
-        return true;
     }
 
 }
