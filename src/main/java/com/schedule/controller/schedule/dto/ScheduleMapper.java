@@ -16,8 +16,8 @@ public class ScheduleMapper {
                 .id(schedule.getId())
                 .content(schedule.getContent())
                 .author_id(schedule.getAuthor_id())
-                .created(LocalDateTime.parse(schedule.getCreated().format(DATE_FORMATTER)))
-                .updated(LocalDateTime.parse(schedule.getUpdated().format(DATE_FORMATTER)))
+                .created(schedule.getCreated().format(DATE_FORMATTER))
+                .updated(schedule.getUpdated().format(DATE_FORMATTER))
                 .build();
 
     }

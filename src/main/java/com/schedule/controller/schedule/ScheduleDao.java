@@ -85,25 +85,28 @@ public class ScheduleDao {
 
     //모두조회
     public List<Schedule> findAllSchedule(String authorName, LocalDate date) throws CustomSQLException {
-        String sql = "SELECT id, name, content, password, created, updated FROM schedule WHERE 1=1";
-        List<Schedule> schedules = new ArrayList<>();
+        String sql = "SELECT s.id, s.content, s.created, s.updated, s.author_id, s.author_email " +
+                "FROM schedule s " +
+                "JOIN author a ON s.author_id = a.id " +
+                "WHERE 1=1";
 
         if(authorName != null){
-            sql += " AND name = ?";
+            sql += " AND a.name LIKE ?";
         }
         if(date != null){
-            sql += " AND (DATE(created) = ? OR DATE(updated) = ?)";
+            sql += " AND (DATE(s.created) = ? OR DATE(s.updated) = ?)";
         }
-        sql += " ORDER BY created DESC";
+        sql += " ORDER BY s.created DESC";
 
-        try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+        List<Schedule> schedules = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             int index = 1;
             if (authorName != null) {
-                pstmt.setString(index++, authorName);
+                pstmt.setString(index++, "%" + authorName + "%");
             }
-            if (date != null) {
+            if(date != null){
                 pstmt.setDate(index++, Date.valueOf(date));
                 pstmt.setDate(index++, Date.valueOf(date));
             }
@@ -111,9 +114,6 @@ public class ScheduleDao {
             try(ResultSet rs = pstmt.executeQuery()){
                 while(rs.next()){
                     schedules.add(mapResultSetToSchedule(rs));
-                }
-                if(!rs.next()){
-                    throw new CustomException(ErrorCode.CONTENT_NOT_FOUND);
                 }
             }
         }catch(SQLException e){

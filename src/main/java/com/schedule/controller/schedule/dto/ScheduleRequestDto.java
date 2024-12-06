@@ -14,6 +14,7 @@ import java.util.UUID;
 @Getter
 public class ScheduleRequestDto {
 
+    @NotNull(message = "오류 : 고유 id 누락")
     private UUID author_id;
 
     @NotNull(message = "할 일을 입력해주세요.")
