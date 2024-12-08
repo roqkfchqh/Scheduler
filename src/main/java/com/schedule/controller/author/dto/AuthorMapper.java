@@ -15,6 +15,7 @@ public class AuthorMapper {
                 .build();
     }
 
+    //dto -> entity
     public static Author toEntity(AuthorRequestDto dto, String encodedPassword) {
         return Author.create(
                 dto.getEmail(),

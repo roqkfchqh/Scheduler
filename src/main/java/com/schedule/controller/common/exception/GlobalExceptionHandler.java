@@ -13,6 +13,7 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    //runtimeException
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<Map<String, Object>> handleCustomException(CustomException e){
         ErrorCode errorCode = e.getErrorCode();
@@ -23,6 +24,7 @@ public class GlobalExceptionHandler {
                 ));
     }
 
+    //sqlException
     @ExceptionHandler(CustomSQLException.class)
     public ResponseEntity<Map<String, Object>> handleCustomSQLException(CustomSQLException e){
         SQLErrorCode sqlErrorCode = e.getSqlErrorCode();
@@ -33,6 +35,7 @@ public class GlobalExceptionHandler {
                 ));
     }
 
+    //validException
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationExceptions(MethodArgumentNotValidException e){
         Map<String, String> errorMessages = new HashMap<>();
@@ -40,11 +43,10 @@ public class GlobalExceptionHandler {
             errorMessages.put(error.getField(), error.getDefaultMessage());
         }
 
-        Map<String, Object> response = Map.of(
-                "⛔: ", errorMessages,
-                "에러코드: ", HttpStatus.BAD_REQUEST.value()
-        );
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of(
+                        "⛔: ", errorMessages,
+                        "에러코드: ", HttpStatus.BAD_REQUEST.value()
+                ));
     }
 }

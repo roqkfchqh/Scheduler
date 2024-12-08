@@ -20,22 +20,26 @@ public class AuthorController {
 
     private final AuthorService authorService;
 
+    //create
     @PostMapping
     public ResponseEntity<AuthorResponseDto> createAuthor(@Valid @RequestBody AuthorRequestDto dto) throws CustomSQLException {
         return ResponseEntity.ok(authorService.createAuthor(dto));
     }
 
+    //update
     @PostMapping("/{authorId}/update")
     public ResponseEntity<AuthorResponseDto> updateAuthor(@PathVariable UUID authorId, @Valid @RequestBody CombinedAuthorRequestDto dto) throws CustomSQLException {
         return ResponseEntity.ok(authorService.updateAuthor(authorId, dto));
     }
 
+    //delete
     @PostMapping("/{authorId}/delete")
     public ResponseEntity<AuthorResponseDto> deleteAuthor(@PathVariable UUID authorId, @Valid @RequestBody PasswordRequestDto dto) throws CustomSQLException {
         authorService.deleteAuthor(authorId, dto);
         return ResponseEntity.noContent().build();
     }
 
+    //validate
     @PostMapping("/validate-password")
     public ResponseEntity<Boolean> validatePasswordForSchedule(@RequestBody Map<Object, String> payload) throws CustomSQLException {
         UUID authorId = UUID.fromString((payload.get("authorId")));

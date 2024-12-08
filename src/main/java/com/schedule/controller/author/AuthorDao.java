@@ -19,6 +19,7 @@ public class AuthorDao {
     private static final String USER = "postgres";
     private static final String PASSWORD = System.getenv("DB_PASSWORD");
 
+    //create
     public void createAuthor(Author author) throws CustomSQLException {
         String sql = "INSERT INTO author (id, email, name, password) VALUES (?, ?, ?, ?)";
 
@@ -42,6 +43,7 @@ public class AuthorDao {
         }
     }
 
+    //update
     public void updateAuthor(Author author) throws CustomSQLException {
         String sql = "UPDATE author SET name = ?, password = ?, email = ? WHERE id = ?";
 
@@ -64,6 +66,7 @@ public class AuthorDao {
         }
     }
 
+    //delete
     public void deleteAuthor(UUID authorId) throws CustomSQLException {
         String sql = "DELETE FROM author WHERE id = ?";
 
@@ -82,6 +85,7 @@ public class AuthorDao {
         }
     }
 
+    //authorId로 조회
     public Author findAuthorById(UUID authorId) throws CustomSQLException {
         String sql = "SELECT id, name, email, password FROM author WHERE id = ?";
 
@@ -103,6 +107,7 @@ public class AuthorDao {
         return null;
     }
 
+    //rs -> entity
     private Author mapResultSetToAuthor(ResultSet rs) throws SQLException{
         Author author = new Author();
         author.setId((UUID) rs.getObject("id"));
@@ -112,6 +117,7 @@ public class AuthorDao {
         return author;
     }
 
+    //sql 예외처리 한꺼번에 처리
     private static void sqlExtracted(SQLException e) throws CustomSQLException {
         logger.error("SQL Exception 발생: SQLState={}, ErrorCode={}, Message={}",
                 e.getSQLState(), e.getErrorCode(), e.getMessage(), e);
