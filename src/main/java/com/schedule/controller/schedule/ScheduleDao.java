@@ -85,7 +85,7 @@ public class ScheduleDao {
 
     //모두조회 (paging 용)
     public List<ScheduleResponseDto> findAllSchedule(String authorName, LocalDate date) throws CustomSQLException{
-        String sql = "SELECT s.id, s.content, s.created, s.updated, a.name AS author_name, a.email AS author_email " +
+        String sql = "SELECT s.id, s.content, s.created, s.updated, s.author_id, a.name AS author_name, a.email AS author_email " +
                 "FROM schedule s " +
                 "JOIN author a ON s.author_id = a.id " +
                 "WHERE 1=1";
@@ -124,7 +124,7 @@ public class ScheduleDao {
 
     //scheduleId 로 조회
     public ScheduleResponseDto findScheduleById(UUID scheduleId) throws CustomSQLException {
-        String sql = "SELECT s.content, s.created, s.updated ,a.name AS author_name, a.email AS author_email FROM schedule s JOIN author a ON s.author_id = a.id WHERE s.id = ?";
+        String sql = "SELECT s.content, s.created, s.updated ,s.author_id, a.name AS author_name, a.email AS author_email FROM schedule s JOIN author a ON s.author_id = a.id WHERE s.id = ?";
 
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
             PreparedStatement pstmt = conn.prepareStatement(sql)){

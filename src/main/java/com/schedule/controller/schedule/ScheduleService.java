@@ -27,9 +27,7 @@ public class ScheduleService {
 
     //save
     public ScheduleResponseDto saveSchedule(ScheduleRequestDto dto){
-        Schedule schedule = Schedule.builder()
-                .content(dto.getContent())
-                .build();
+        Schedule schedule = new Schedule(dto.getContent(), dto.getAuthor_id());
         return saveScheduleWithTransaction(schedule);
     }
 
@@ -111,7 +109,9 @@ public class ScheduleService {
     public ScheduleResponseDto saveScheduleWithTransaction(Schedule schedule){
         return transactionTemplate.execute(status -> {
             try{
+                System.out.println("author dㅏㅇ이디 : "+ schedule.getAuthor_id());
                 scheduleDao.saveSchedule(schedule);
+                System.out.println(schedule.getId());
                 return getSchedule(schedule.getId());
             }catch(Exception e){
                 status.setRollbackOnly();

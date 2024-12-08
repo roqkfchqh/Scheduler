@@ -13,13 +13,12 @@ import java.util.UUID;
 @EqualsAndHashCode(of = "id")
 public class Schedule {
 
-    //save 할 때 씀
-    public Schedule(String content) {
+    public Schedule(String content, UUID author_id) {
         this();
         this.content = content;
+        this.author_id = author_id;
     }
 
-    //기본생성자
     public Schedule(){
         this.id = UUID.randomUUID();
         this.created = LocalDateTime.now();
