@@ -26,11 +26,6 @@ public class AuthorDao {
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
             PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)){
 
-            System.out.println(author.getId());
-            System.out.println(author.getEmail());
-            System.out.println(author.getName());
-            System.out.println(author.getPassword());
-
             pstmt.setObject(1, author.getId());
             pstmt.setString(2, author.getEmail());
             pstmt.setString(3, author.getName());
@@ -98,7 +93,7 @@ public class AuthorDao {
                 if(rs.next()){
                     return mapResultSetToAuthor(rs);
                 }else{
-                    throw new CustomException(ErrorCode.BAD_GATEWAY);
+                    throw new CustomException(ErrorCode.USER_NOT_FOUND);
                 }
             }
         }catch(SQLException e){

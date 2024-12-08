@@ -71,17 +71,9 @@ public class ScheduleService {
     }
 
     //delete
-    public void deleteSchedule(UUID scheduleId, String authorPassword){
-        transactionTemplate.execute(status -> {
-            try{
-                validateIdAndPassword(scheduleId, authorPassword);
-                scheduleDao.deleteSchedule(scheduleId);
-                return null;
-            }catch(Exception e){
-                status.setRollbackOnly();
-                throw new CustomException(ErrorCode.BAD_GATEWAY);
-            }
-        });
+    public void deleteSchedule(UUID scheduleId, String authorPassword) throws CustomSQLException {
+        validateIdAndPassword(scheduleId, authorPassword);
+        scheduleDao.deleteSchedule(scheduleId);
     }
 
     //authorId와 password 검증
@@ -109,9 +101,7 @@ public class ScheduleService {
     public ScheduleResponseDto saveScheduleWithTransaction(Schedule schedule){
         return transactionTemplate.execute(status -> {
             try{
-                System.out.println("author dㅏㅇ이디 : "+ schedule.getAuthor_id());
                 scheduleDao.saveSchedule(schedule);
-                System.out.println(schedule.getId());
                 return getSchedule(schedule.getId());
             }catch(Exception e){
                 status.setRollbackOnly();
