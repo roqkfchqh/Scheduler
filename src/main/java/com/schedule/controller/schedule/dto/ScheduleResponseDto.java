@@ -12,9 +12,10 @@ import java.util.UUID;
 @AllArgsConstructor
 public class ScheduleResponseDto {
 
-    private UUID id;
+    private UUID authorId;
     private String content;
-    private UUID author_id;
+    private String authorName;
+    private String authorEmail;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private String created;

@@ -4,10 +4,10 @@ import com.schedule.controller.common.exception.CustomException;
 import com.schedule.controller.common.exception.CustomSQLException;
 import com.schedule.controller.common.exception.ErrorCode;
 import com.schedule.controller.common.exception.SQLErrorCode;
+import com.schedule.controller.schedule.dto.ScheduleResponseDto;
 import org.springframework.stereotype.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -23,7 +23,7 @@ public class ScheduleDao {
     private static final String USER = "postgres";
     private static final String PASSWORD = System.getenv("DB_PASSWORD");
 
-    //saveSchedule
+    //save
     public void saveSchedule(Schedule schedule) throws CustomSQLException {
         String sql = "INSERT INTO schedule (id, content, author_id, created, updated) VALUES (?, ?, ?, ?, ?)";
 
@@ -43,7 +43,7 @@ public class ScheduleDao {
         }
     }
 
-    //updateSchedule
+    //update
     public void updateSchedule(Schedule schedule) throws CustomSQLException {
         String sql = "UPDATE schedule SET content = ?, updated = ? WHERE id = ?";
 
@@ -83,9 +83,9 @@ public class ScheduleDao {
         }
     }
 
-    //모두조회
-    public List<Schedule> findAllSchedule(String authorName, LocalDate date) throws CustomSQLException {
-        String sql = "SELECT s.id, s.content, s.created, s.updated, s.author_id, s.author_email " +
+    //모두조회 (paging 용)
+    public List<ScheduleResponseDto> findAllSchedule(String authorName, LocalDate date) throws CustomSQLException{
+        String sql = "SELECT s.id, s.content, s.created, s.updated, a.name AS author_name, a.email AS author_email " +
                 "FROM schedule s " +
                 "JOIN author a ON s.author_id = a.id " +
                 "WHERE 1=1";
@@ -98,12 +98,12 @@ public class ScheduleDao {
         }
         sql += " ORDER BY s.created DESC";
 
-        List<Schedule> schedules = new ArrayList<>();
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        List<ScheduleResponseDto> schedules = new ArrayList<>();
+        try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement pstmt = conn.prepareStatement(sql)){
 
             int index = 1;
-            if (authorName != null) {
+            if(authorName != null){
                 pstmt.setString(index++, "%" + authorName + "%");
             }
             if(date != null){
@@ -113,18 +113,18 @@ public class ScheduleDao {
 
             try(ResultSet rs = pstmt.executeQuery()){
                 while(rs.next()){
-                    schedules.add(mapResultSetToSchedule(rs));
+                    schedules.add(getBuild(rs));
                 }
             }
-        }catch(SQLException e){
+        } catch (SQLException e) {
             sqlExtracted(e);
         }
         return schedules;
     }
 
-    //id 로 조회
-    public Schedule findScheduleById(UUID scheduleId) throws CustomSQLException {
-        String sql = "SELECT id, content, author_id, created, updated FROM schedule WHERE id = ?";
+    //scheduleId 로 조회
+    public ScheduleResponseDto findScheduleById(UUID scheduleId) throws CustomSQLException {
+        String sql = "SELECT s.content, s.created, s.updated ,a.name AS author_name, a.email AS author_email FROM schedule s JOIN author a ON s.author_id = a.id WHERE s.id = ?";
 
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
             PreparedStatement pstmt = conn.prepareStatement(sql)){
@@ -133,7 +133,7 @@ public class ScheduleDao {
 
             try(ResultSet rs = pstmt.executeQuery()){
                 if(rs.next()){
-                    return mapResultSetToSchedule(rs);
+                    return getBuild(rs);
                 }else{
                     throw new CustomException(ErrorCode.CONTENT_NOT_FOUND);
                 }
@@ -144,17 +144,19 @@ public class ScheduleDao {
         return null;
     }
 
-    //resultSet -> schedule mapping
-    private Schedule mapResultSetToSchedule(ResultSet rs) throws SQLException{
-        Schedule schedule = new Schedule();
-        schedule.setId((UUID) rs.getObject("id"));
-        schedule.setContent(rs.getString("content"));
-        schedule.setAuthor_id((UUID)(rs.getObject("author_id")));
-        schedule.setCreated(rs.getTimestamp("created").toLocalDateTime());
-        schedule.setUpdated(rs.getTimestamp("updated").toLocalDateTime());
-        return schedule;
+    //responseDto 빌더
+    private static ScheduleResponseDto getBuild(ResultSet rs) throws SQLException {
+        return ScheduleResponseDto.builder()
+                .authorId((UUID)rs.getObject("author_id"))
+                .content(rs.getString("content"))
+                .authorName(rs.getString("author_name"))
+                .authorEmail(rs.getString("author_email"))
+                .created(rs.getTimestamp("created").toLocalDateTime().toString())
+                .updated(rs.getTimestamp("updated").toLocalDateTime().toString())
+                .build();
     }
 
+    //sql 예외처리 한꺼번에 처리
     private static void sqlExtracted(SQLException e) throws CustomSQLException {
         logger.error("SQL Exception 발생: SQLState={}, ErrorCode={}, Message={}",
                 e.getSQLState(), e.getErrorCode(), e.getMessage(), e);

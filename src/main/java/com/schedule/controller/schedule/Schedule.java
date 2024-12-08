@@ -33,9 +33,4 @@ public class Schedule {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDateTime updated;
-
-    public void updateSchedule(String content) {
-        this.content = content;
-        this.updated = LocalDateTime.now();
-    }
 }
