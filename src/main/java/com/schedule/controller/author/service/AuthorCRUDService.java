@@ -13,7 +13,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class AuthorService {
+public class AuthorCRUDService {
 
     private final AuthorValidationService authorValidationService;
     private final AuthorDao authorDao;
@@ -25,6 +25,12 @@ public class AuthorService {
         Author author = AuthorMapper.toEntity(dto, encodedPassword);
 
         authorDao.createAuthor(author);
+        return AuthorMapper.toDto(author);
+    }
+
+    //read
+    public AuthorResponseDto readAuthor(UUID authorId){
+        Author author = authorDao.findAuthorById(authorId);
         return AuthorMapper.toDto(author);
     }
 

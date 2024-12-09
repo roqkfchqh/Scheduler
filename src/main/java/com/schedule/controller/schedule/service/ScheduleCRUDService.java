@@ -1,5 +1,7 @@
 package com.schedule.controller.schedule.service;
 
+import com.schedule.controller.common.exception.CustomException;
+import com.schedule.controller.common.exception.ErrorCode;
 import com.schedule.controller.schedule.model.Schedule;
 import com.schedule.controller.schedule.dao.ScheduleDao;
 import com.schedule.controller.schedule.dto.ScheduleRequestDto;
@@ -14,21 +16,25 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class ScheduleService {
+public class ScheduleCRUDService {
 
     private final ScheduleDao scheduleDao;
     private final ServiceValidationService serviceValidationService;
 
-    //save
-    public ScheduleResponseDto saveSchedule(ScheduleRequestDto dto){
+    //create
+    public ScheduleResponseDto createSchedule(ScheduleRequestDto dto){
         Schedule schedule = new Schedule(dto.getContent(), dto.getAuthor_id());
-        scheduleDao.saveSchedule(schedule);
-        return getSchedule(schedule.getId());
+        scheduleDao.createSchedule(schedule);
+        return readSchedule(schedule.getId());
     }
 
-    //scheduleId로 schedule 가져오기
-    public ScheduleResponseDto getSchedule(UUID scheduleId){
-        return scheduleDao.findScheduleById(scheduleId);
+    //read
+    public ScheduleResponseDto readSchedule(UUID scheduleId){
+        ScheduleResponseDto schedule = scheduleDao.findScheduleById(scheduleId);
+        if(schedule == null){
+            throw new CustomException(ErrorCode.NOT_FOUND);
+        }
+        return schedule;
     }
 
     //update
@@ -43,7 +49,7 @@ public class ScheduleService {
                 .build();
 
         scheduleDao.updateSchedule(updatedSchedule);
-        return getSchedule(updatedSchedule.getId());
+        return readSchedule(updatedSchedule.getId());
     }
 
     //delete

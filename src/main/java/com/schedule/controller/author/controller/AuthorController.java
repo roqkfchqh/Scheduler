@@ -1,6 +1,6 @@
 package com.schedule.controller.author.controller;
 
-import com.schedule.controller.author.service.AuthorService;
+import com.schedule.controller.author.service.AuthorCRUDService;
 import com.schedule.controller.author.dto.AuthorRequestDto;
 import com.schedule.controller.author.dto.AuthorResponseDto;
 import com.schedule.controller.author.dto.CombinedAuthorRequestDto;
@@ -19,25 +19,30 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AuthorController {
 
-    private final AuthorService authorService;
+    private final AuthorCRUDService authorCRUDService;
     private final AuthorValidationService authorValidationService;
 
     //create
     @PostMapping
     public ResponseEntity<AuthorResponseDto> createAuthor(@Valid @RequestBody AuthorRequestDto dto){
-        return ResponseEntity.ok(authorService.createAuthor(dto));
+        return ResponseEntity.ok(authorCRUDService.createAuthor(dto));
+    }
+
+    @GetMapping("/{authorId}")
+    public ResponseEntity<AuthorResponseDto> readAuthor(@PathVariable UUID authorId){
+        return ResponseEntity.ok(authorCRUDService.readAuthor(authorId));
     }
 
     //update
     @PostMapping("/{authorId}/update")
     public ResponseEntity<AuthorResponseDto> updateAuthor(@PathVariable UUID authorId, @Valid @RequestBody CombinedAuthorRequestDto dto){
-        return ResponseEntity.ok(authorService.updateAuthor(authorId, dto));
+        return ResponseEntity.ok(authorCRUDService.updateAuthor(authorId, dto));
     }
 
     //delete
     @PostMapping("/{authorId}/delete")
     public ResponseEntity<AuthorResponseDto> deleteAuthor(@PathVariable UUID authorId, @Valid @RequestBody PasswordRequestDto dto){
-        authorService.deleteAuthor(authorId, dto);
+        authorCRUDService.deleteAuthor(authorId, dto);
         return ResponseEntity.noContent().build();
     }
 

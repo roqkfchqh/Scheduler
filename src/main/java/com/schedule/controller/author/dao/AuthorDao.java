@@ -1,12 +1,10 @@
 package com.schedule.controller.author.dao;
 
 import com.schedule.controller.author.model.Author;
+import com.schedule.controller.common.database.DatabaseExceptionHandler;
+import com.schedule.controller.common.database.DatabaseConnection;
 import com.schedule.controller.common.exception.CustomException;
-import com.schedule.controller.common.exception.CustomSQLException;
 import com.schedule.controller.common.exception.ErrorCode;
-import com.schedule.controller.common.exception.SQLErrorCode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -15,17 +13,12 @@ import java.util.UUID;
 @Repository
 public class AuthorDao {
 
-    private static final Logger logger = LoggerFactory.getLogger(AuthorDao.class);
-    private static final String URL ="jdbc:postgresql://localhost:5432/schedule_db";
-    private static final String USER = "postgres";
-    private static final String PASSWORD = System.getenv("DB_PASSWORD");
-
     //create
     public void createAuthor(Author author){
         String sql = "INSERT INTO author (id, email, name, password) VALUES (?, ?, ?, ?)";
 
-        try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
-            PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)){
+        try(Connection conn = DatabaseConnection.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql)){
 
             pstmt.setObject(1, author.getId());
             pstmt.setString(2, author.getEmail());
@@ -35,7 +28,7 @@ public class AuthorDao {
             pstmt.executeUpdate();
 
         }catch(SQLException e){
-            sqlExtracted(e);
+            DatabaseExceptionHandler.sqlExtracted(e);
         }
     }
 
@@ -43,7 +36,7 @@ public class AuthorDao {
     public void updateAuthor(Author author){
         String sql = "UPDATE author SET name = ?, password = ?, email = ? WHERE id = ?";
 
-        try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+        try(Connection conn = DatabaseConnection.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql)){
 
             pstmt.setString(1, author.getName());
@@ -58,7 +51,7 @@ public class AuthorDao {
             }
 
         }catch(SQLException e){
-            sqlExtracted(e);
+            DatabaseExceptionHandler.sqlExtracted(e);
         }
     }
 
@@ -66,7 +59,7 @@ public class AuthorDao {
     public void deleteAuthor(UUID authorId){
         String sql = "DELETE FROM author WHERE id = ?";
 
-        try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+        try(Connection conn = DatabaseConnection.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql)){
 
             pstmt.setObject(1, authorId);
@@ -77,7 +70,7 @@ public class AuthorDao {
             }
 
         }catch(SQLException e){
-            sqlExtracted(e);
+            DatabaseExceptionHandler.sqlExtracted(e);
         }
     }
 
@@ -85,7 +78,7 @@ public class AuthorDao {
     public Author findAuthorById(UUID authorId){
         String sql = "SELECT id, name, email, password FROM author WHERE id = ?";
 
-        try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+        try(Connection conn = DatabaseConnection.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql)){
 
             pstmt.setObject(1, authorId);
@@ -98,7 +91,7 @@ public class AuthorDao {
                 }
             }
         }catch(SQLException e){
-            sqlExtracted(e);
+            DatabaseExceptionHandler.sqlExtracted(e);
         }
         return null;
     }
@@ -111,21 +104,5 @@ public class AuthorDao {
         author.setEmail(rs.getString("email"));
         author.setPassword(rs.getString("password"));
         return author;
-    }
-
-    //sql 예외처리 한꺼번에 처리
-    private static void sqlExtracted(SQLException e){
-        logger.error("SQL Exception 발생: SQLState={}, ErrorCode={}, Message={}",
-                e.getSQLState(), e.getErrorCode(), e.getMessage(), e);
-
-        if(e.getSQLState().startsWith("08")){
-            throw new CustomSQLException(SQLErrorCode.DATABASE_CONNECTION_ERROR);
-        }else if(e.getSQLState().startsWith("22")) {
-            throw new CustomSQLException(SQLErrorCode.DATA_TYPE_ERROR);
-        }else if(e.getSQLState().contains("23505")){
-            throw new CustomSQLException(SQLErrorCode.UNIQUE_KEY_DUPLICATE);
-        }else{
-            throw new CustomSQLException(SQLErrorCode.UNKNOWN_DATABASE_ERROR);
-        }
     }
 }

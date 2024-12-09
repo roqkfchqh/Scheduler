@@ -18,11 +18,11 @@ import java.util.UUID;
 public class ServiceValidationService {
 
     private final RestTemplate restTemplate;
-    private final ScheduleService scheduleService;
+    private final ScheduleCRUDService scheduleCRUDService;
 
     //authorId와 password 검증
     public ScheduleResponseDto validateIdAndPassword(UUID scheduleId, String authorPassword){
-        ScheduleResponseDto existingSchedule = scheduleService.getSchedule(scheduleId);
+        ScheduleResponseDto existingSchedule = scheduleCRUDService.readSchedule(scheduleId);
 
         try{
             String url = "http://localhost:8080/authors/validate-password";
