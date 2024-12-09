@@ -1,9 +1,10 @@
-package com.schedule.controller.schedule;
+package com.schedule.controller.schedule.dao;
 
 import com.schedule.controller.common.exception.CustomException;
 import com.schedule.controller.common.exception.CustomSQLException;
 import com.schedule.controller.common.exception.ErrorCode;
 import com.schedule.controller.common.exception.SQLErrorCode;
+import com.schedule.controller.schedule.model.Schedule;
 import com.schedule.controller.schedule.dto.ScheduleResponseDto;
 import org.springframework.stereotype.Repository;
 import org.slf4j.Logger;
@@ -24,7 +25,7 @@ public class ScheduleDao {
     private static final String PASSWORD = System.getenv("DB_PASSWORD");
 
     //save
-    public void saveSchedule(Schedule schedule) throws CustomSQLException {
+    public void saveSchedule(Schedule schedule){
         String sql = "INSERT INTO schedule (id, content, author_id, created, updated) VALUES (?, ?, ?, ?, ?)";
 
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
@@ -44,7 +45,7 @@ public class ScheduleDao {
     }
 
     //update
-    public void updateSchedule(Schedule schedule) throws CustomSQLException {
+    public void updateSchedule(Schedule schedule){
         String sql = "UPDATE schedule SET content = ?, updated = ? WHERE id = ?";
 
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
@@ -65,7 +66,7 @@ public class ScheduleDao {
     }
 
     //delete
-    public void deleteSchedule(UUID scheduleId) throws CustomSQLException {
+    public void deleteSchedule(UUID scheduleId){
         String sql = "DELETE FROM schedule WHERE id = ?";
 
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
@@ -84,7 +85,7 @@ public class ScheduleDao {
     }
 
     //모두조회 (paging 용)
-    public List<ScheduleResponseDto> findAllSchedule(String authorName, LocalDate date) throws CustomSQLException{
+    public List<ScheduleResponseDto> findAllSchedule(String authorName, LocalDate date){
         String sql = "SELECT s.id, s.content, s.created, s.updated, s.author_id, a.name AS author_name, a.email AS author_email " +
                 "FROM schedule s " +
                 "JOIN author a ON s.author_id = a.id " +
@@ -123,7 +124,7 @@ public class ScheduleDao {
     }
 
     //scheduleId 로 조회
-    public ScheduleResponseDto findScheduleById(UUID scheduleId) throws CustomSQLException {
+    public ScheduleResponseDto findScheduleById(UUID scheduleId){
         String sql = "SELECT s.content, s.created, s.updated ,s.author_id, a.name AS author_name, a.email AS author_email FROM schedule s JOIN author a ON s.author_id = a.id WHERE s.id = ?";
 
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
@@ -157,16 +158,16 @@ public class ScheduleDao {
     }
 
     //sql 예외처리 한꺼번에 처리
-    private static void sqlExtracted(SQLException e) throws CustomSQLException {
+    private static void sqlExtracted(SQLException e){
         logger.error("SQL Exception 발생: SQLState={}, ErrorCode={}, Message={}",
                 e.getSQLState(), e.getErrorCode(), e.getMessage(), e);
 
         if(e.getSQLState().startsWith("08")){
-            throw new CustomSQLException(SQLErrorCode.DATABASE_CONNECTION_ERROR, e);
+            throw new CustomSQLException(SQLErrorCode.DATABASE_CONNECTION_ERROR);
         }else if(e.getSQLState().startsWith("22")){
-            throw new CustomSQLException(SQLErrorCode.DATA_TYPE_ERROR, e);
+            throw new CustomSQLException(SQLErrorCode.DATA_TYPE_ERROR);
         }else{
-            throw new CustomSQLException(SQLErrorCode.UNKNOWN_DATABASE_ERROR, e);
+            throw new CustomSQLException(SQLErrorCode.UNKNOWN_DATABASE_ERROR);
         }
     }
 }

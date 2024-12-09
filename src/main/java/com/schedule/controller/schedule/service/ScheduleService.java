@@ -1,8 +1,9 @@
-package com.schedule.controller.schedule;
+package com.schedule.controller.schedule.service;
 
 import com.schedule.controller.common.exception.CustomException;
-import com.schedule.controller.common.exception.CustomSQLException;
 import com.schedule.controller.common.exception.ErrorCode;
+import com.schedule.controller.schedule.model.Schedule;
+import com.schedule.controller.schedule.dao.ScheduleDao;
 import com.schedule.controller.schedule.dto.ScheduleRequestDto;
 import com.schedule.controller.schedule.dto.ScheduleResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class ScheduleService {
     }
 
     //paging
-    public List<ScheduleResponseDto> getPagedSchedules(String authorName, LocalDate date, int page, int size) throws CustomSQLException{
+    public List<ScheduleResponseDto> getPagedSchedules(String authorName, LocalDate date, int page, int size){
         if(page < 1 || size < 1){
             throw new CustomException(ErrorCode.PAGING_ERROR);
         }
@@ -52,12 +53,12 @@ public class ScheduleService {
     }
 
     //scheduleId로 schedule 가져오기
-    public ScheduleResponseDto getSchedule(UUID scheduleId) throws CustomSQLException {
+    public ScheduleResponseDto getSchedule(UUID scheduleId){
         return scheduleDao.findScheduleById(scheduleId);
     }
 
     //update
-    public ScheduleResponseDto updateSchedule(UUID scheduleId, ScheduleRequestDto dto, String authorPassword) throws CustomSQLException {
+    public ScheduleResponseDto updateSchedule(UUID scheduleId, ScheduleRequestDto dto, String authorPassword){
         ScheduleResponseDto existingSchedule = validateIdAndPassword(scheduleId, authorPassword);
 
         Schedule updatedSchedule = Schedule.builder()
@@ -71,13 +72,13 @@ public class ScheduleService {
     }
 
     //delete
-    public void deleteSchedule(UUID scheduleId, String authorPassword) throws CustomSQLException {
+    public void deleteSchedule(UUID scheduleId, String authorPassword){
         validateIdAndPassword(scheduleId, authorPassword);
         scheduleDao.deleteSchedule(scheduleId);
     }
 
     //authorId와 password 검증
-    private ScheduleResponseDto validateIdAndPassword(UUID scheduleId, String authorPassword) throws CustomSQLException {
+    private ScheduleResponseDto validateIdAndPassword(UUID scheduleId, String authorPassword){
         ScheduleResponseDto existingSchedule = getSchedule(scheduleId);
 
         try{

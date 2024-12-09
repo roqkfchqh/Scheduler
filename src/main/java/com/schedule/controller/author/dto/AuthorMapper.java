@@ -1,8 +1,6 @@
 package com.schedule.controller.author.dto;
 
-import com.schedule.controller.author.Author;
-
-import java.util.UUID;
+import com.schedule.controller.author.model.Author;
 
 public class AuthorMapper {
 

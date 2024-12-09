@@ -1,8 +1,9 @@
-package com.schedule.controller.author;
+package com.schedule.controller.author.service;
 
+import com.schedule.controller.author.dao.AuthorDao;
 import com.schedule.controller.author.dto.*;
+import com.schedule.controller.author.model.Author;
 import com.schedule.controller.common.exception.CustomException;
-import com.schedule.controller.common.exception.CustomSQLException;
 import com.schedule.controller.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,7 +19,7 @@ public class AuthorService {
     private final PasswordEncoder passwordEncoder;
 
     //create
-    public AuthorResponseDto createAuthor(AuthorRequestDto dto) throws CustomSQLException {
+    public AuthorResponseDto createAuthor(AuthorRequestDto dto){
         String encodedPassword = passwordEncoder.encode(dto.getPassword());
         Author author = AuthorMapper.toEntity(dto, encodedPassword);
 
@@ -27,7 +28,7 @@ public class AuthorService {
     }
 
     //update
-    public AuthorResponseDto updateAuthor(UUID authorId, CombinedAuthorRequestDto dto) throws CustomSQLException {
+    public AuthorResponseDto updateAuthor(UUID authorId, CombinedAuthorRequestDto dto){
         Author author = authorDao.findAuthorById(authorId);
         validateAuthor(authorId, dto.getPasswordDto().getPassword());
         String encodedPassword = passwordEncoder.encode(dto.getAuthorDto().getPassword());
@@ -42,13 +43,13 @@ public class AuthorService {
     }
 
     //delete
-    public void deleteAuthor(UUID authorId, PasswordRequestDto dto) throws CustomSQLException {
+    public void deleteAuthor(UUID authorId, PasswordRequestDto dto){
         validateAuthor(authorId, dto.getPassword());
         authorDao.deleteAuthor(authorId);
     }
 
     //validate
-    public boolean validateAuthor(UUID authorId, String password) throws CustomSQLException {
+    public boolean validateAuthor(UUID authorId, String password){
         Author author = authorDao.findAuthorById(authorId);
         if(author == null){
             throw new CustomException(ErrorCode.USER_NOT_FOUND);

@@ -13,28 +13,6 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    //runtimeException
-    @ExceptionHandler(CustomException.class)
-    public ResponseEntity<Map<String, Object>> handleCustomException(CustomException e){
-        ErrorCode errorCode = e.getErrorCode();
-        return ResponseEntity.status(errorCode.getStatus())
-                .body(Map.of(
-                        "⛔: ", errorCode.getMessage(),
-                        "에러코드: ", errorCode.getStatus()
-                ));
-    }
-
-    //sqlException
-    @ExceptionHandler(CustomSQLException.class)
-    public ResponseEntity<Map<String, Object>> handleCustomSQLException(CustomSQLException e){
-        SQLErrorCode sqlErrorCode = e.getSqlErrorCode();
-        return ResponseEntity.status(sqlErrorCode.getStatus())
-                .body(Map.of(
-                        "⛔: ", sqlErrorCode.getMessage(),
-                        "에러코드: ", sqlErrorCode.getStatus()
-                ));
-    }
-
     //validException
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationExceptions(MethodArgumentNotValidException e){
@@ -43,10 +21,24 @@ public class GlobalExceptionHandler {
             errorMessages.put(error.getField(), error.getDefaultMessage());
         }
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(Map.of(
-                        "⛔: ", errorMessages,
-                        "에러코드: ", HttpStatus.BAD_REQUEST.value()
-                ));
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, "validation exception", errorMessages);
+    }
+
+    //baseException
+    @ExceptionHandler(BaseException.class)
+    public ResponseEntity<Map<String, Object>> handleBaseException(BaseException e){
+        return buildErrorResponse(e.getStatus(), e.getMessage(), null);
+    }
+
+    //공통 errorResponse
+    private ResponseEntity<Map<String, Object>> buildErrorResponse(HttpStatus status, String message, Object errors){
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", status.value());
+        response.put("error", status.getReasonPhrase());
+        response.put("message", message);
+        if(errors != null){
+            response.put("errors", errors);
+        }
+        return ResponseEntity.status(status).body(response);
     }
 }

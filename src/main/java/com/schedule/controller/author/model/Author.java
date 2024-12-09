@@ -1,4 +1,4 @@
-package com.schedule.controller.author;
+package com.schedule.controller.author.model;
 
 import lombok.*;
 

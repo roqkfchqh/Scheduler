@@ -1,5 +1,6 @@
-package com.schedule.controller.author;
+package com.schedule.controller.author.dao;
 
+import com.schedule.controller.author.model.Author;
 import com.schedule.controller.common.exception.CustomException;
 import com.schedule.controller.common.exception.CustomSQLException;
 import com.schedule.controller.common.exception.ErrorCode;
@@ -20,7 +21,7 @@ public class AuthorDao {
     private static final String PASSWORD = System.getenv("DB_PASSWORD");
 
     //create
-    public void createAuthor(Author author) throws CustomSQLException {
+    public void createAuthor(Author author){
         String sql = "INSERT INTO author (id, email, name, password) VALUES (?, ?, ?, ?)";
 
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
@@ -39,7 +40,7 @@ public class AuthorDao {
     }
 
     //update
-    public void updateAuthor(Author author) throws CustomSQLException {
+    public void updateAuthor(Author author){
         String sql = "UPDATE author SET name = ?, password = ?, email = ? WHERE id = ?";
 
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
@@ -62,7 +63,7 @@ public class AuthorDao {
     }
 
     //delete
-    public void deleteAuthor(UUID authorId) throws CustomSQLException {
+    public void deleteAuthor(UUID authorId){
         String sql = "DELETE FROM author WHERE id = ?";
 
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
@@ -81,7 +82,7 @@ public class AuthorDao {
     }
 
     //authorId로 조회
-    public Author findAuthorById(UUID authorId) throws CustomSQLException {
+    public Author findAuthorById(UUID authorId){
         String sql = "SELECT id, name, email, password FROM author WHERE id = ?";
 
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
@@ -113,18 +114,18 @@ public class AuthorDao {
     }
 
     //sql 예외처리 한꺼번에 처리
-    private static void sqlExtracted(SQLException e) throws CustomSQLException {
+    private static void sqlExtracted(SQLException e){
         logger.error("SQL Exception 발생: SQLState={}, ErrorCode={}, Message={}",
                 e.getSQLState(), e.getErrorCode(), e.getMessage(), e);
 
         if(e.getSQLState().startsWith("08")){
-            throw new CustomSQLException(SQLErrorCode.DATABASE_CONNECTION_ERROR, e);
+            throw new CustomSQLException(SQLErrorCode.DATABASE_CONNECTION_ERROR);
         }else if(e.getSQLState().startsWith("22")) {
-            throw new CustomSQLException(SQLErrorCode.DATA_TYPE_ERROR, e);
+            throw new CustomSQLException(SQLErrorCode.DATA_TYPE_ERROR);
         }else if(e.getSQLState().contains("23505")){
-            throw new CustomSQLException(SQLErrorCode.UNIQUE_KEY_DUPLICATE, e);
+            throw new CustomSQLException(SQLErrorCode.UNIQUE_KEY_DUPLICATE);
         }else{
-            throw new CustomSQLException(SQLErrorCode.UNKNOWN_DATABASE_ERROR, e);
+            throw new CustomSQLException(SQLErrorCode.UNKNOWN_DATABASE_ERROR);
         }
     }
 }

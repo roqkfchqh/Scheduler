@@ -1,4 +1,4 @@
-package com.schedule.controller.schedule;
+package com.schedule.controller.schedule.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
