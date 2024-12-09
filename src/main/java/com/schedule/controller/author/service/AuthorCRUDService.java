@@ -22,17 +22,17 @@ public class AuthorCRUDService {
     //create
     public AuthorResponseDto createAuthor(AuthorRequestDto dto){
         String encodedPassword = passwordEncoder.encode(dto.getPassword());
-        Author author = AuthorMapper.toEntity(dto, encodedPassword);
+        Author author = AuthorDtoMapper.toEntity(dto, encodedPassword);
 
         authorDao.createAuthor(author);
-        return AuthorMapper.toDto(author);
+        return AuthorDtoMapper.toDto(author);
     }
 
     //read
     @Transactional(readOnly = true)
     public AuthorResponseDto readAuthor(UUID authorId){
         Author author = authorDao.findAuthorById(authorId);
-        return AuthorMapper.toDto(author);
+        return AuthorDtoMapper.toDto(author);
     }
 
     //update
@@ -47,7 +47,7 @@ public class AuthorCRUDService {
                 encodedPassword
         );
         authorDao.updateAuthor(author);
-        return AuthorMapper.toDto(author);
+        return AuthorDtoMapper.toDto(author);
     }
 
     //delete

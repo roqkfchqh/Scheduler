@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
-public class ScheduleMapper {
+public class ScheduleDaoMapper {
 
     //responseDto 빌더
     public static ScheduleResponseDto getBuild(ResultSet rs) throws SQLException {

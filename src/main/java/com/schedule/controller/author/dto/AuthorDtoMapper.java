@@ -2,7 +2,7 @@ package com.schedule.controller.author.dto;
 
 import com.schedule.controller.author.model.Author;
 
-public class AuthorMapper {
+public class AuthorDtoMapper {
 
     //entity -> dto
     public static AuthorResponseDto toDto(Author author) {

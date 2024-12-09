@@ -109,7 +109,7 @@ public class ScheduleDao {
 
             try(ResultSet rs = pstmt.executeQuery()){
                 while(rs.next()){
-                    schedules.add(ScheduleMapper.getBuild(rs));
+                    schedules.add(ScheduleDaoMapper.getBuild(rs));
                 }
             }
         } catch (SQLException e) {
@@ -129,7 +129,7 @@ public class ScheduleDao {
 
             try(ResultSet rs = pstmt.executeQuery()){
                 if(rs.next()){
-                    return ScheduleMapper.getBuild(rs);
+                    return ScheduleDaoMapper.getBuild(rs);
                 }else{
                     throw new CustomException(ErrorCode.CONTENT_NOT_FOUND);
                 }
