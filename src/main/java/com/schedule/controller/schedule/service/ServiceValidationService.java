@@ -25,21 +25,14 @@ public class ServiceValidationService {
         if(existingSchedule == null){
             throw new CustomException(ErrorCode.NOT_FOUND);
         }
-
-        try{
-            String url = "http://localhost:8080/authors/validate-password";
-            ResponseEntity<Boolean> response = restTemplate.postForEntity(
+        String url = "http://localhost:8080/authors/validate-password";
+        ResponseEntity<Boolean> response = restTemplate.postForEntity(
                     url,
                     Map.of("authorId", existingSchedule.getAuthorId(), "password", authorPassword),
                     Boolean.class);
-
-            if(Boolean.FALSE.equals(response.getBody())){
-                throw new CustomException(ErrorCode.WRONG_PASSWORD);
-            }
-        }catch(Exception e){
-            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
+        if(Boolean.FALSE.equals(response.getBody())){
+            throw new CustomException(ErrorCode.WRONG_PASSWORD);
         }
-
         return existingSchedule;
     }
 }

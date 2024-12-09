@@ -25,10 +25,6 @@ public class AuthorValidationService {
         if(author == null){
             throw new CustomException(ErrorCode.USER_NOT_FOUND);
         }
-        if(passwordEncoder.matches(password, author.getPassword())){
-            return true;
-        }else{
-            throw new CustomException(ErrorCode.WRONG_PASSWORD);
-        }
+        return passwordEncoder.matches(password, author.getPassword());
     }
 }
