@@ -13,12 +13,12 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class SchedulePagingService {
 
     private final ScheduleDao scheduleDao;
 
     //paging
+    @Transactional(readOnly = true)
     public List<ScheduleResponseDto> getPagedSchedules(String authorName, LocalDate date, int page, int size){
         if(page < 1 || size < 1){
             throw new CustomException(ErrorCode.PAGING_ERROR);

@@ -29,6 +29,7 @@ public class AuthorCRUDService {
     }
 
     //read
+    @Transactional(readOnly = true)
     public AuthorResponseDto readAuthor(UUID authorId){
         Author author = authorDao.findAuthorById(authorId);
         return AuthorMapper.toDto(author);

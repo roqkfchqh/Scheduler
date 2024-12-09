@@ -7,7 +7,6 @@ import com.schedule.controller.schedule.dto.ScheduleResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
@@ -15,7 +14,6 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class ServiceValidationService {
 
     private final RestTemplate restTemplate;

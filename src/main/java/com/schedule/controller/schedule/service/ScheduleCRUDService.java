@@ -29,6 +29,7 @@ public class ScheduleCRUDService {
     }
 
     //read
+    @Transactional(readOnly = true)
     public ScheduleResponseDto readSchedule(UUID scheduleId){
         ScheduleResponseDto schedule = scheduleDao.findScheduleById(scheduleId);
         if(schedule == null){
