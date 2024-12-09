@@ -1,4 +1,4 @@
-package com.schedule.controller.common.exception;
+package com.schedule.common.exception;
 
 import org.springframework.http.HttpStatus;
 

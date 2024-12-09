@@ -1,4 +1,4 @@
-package com.schedule.controller.common.config;
+package com.schedule.common.config;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;

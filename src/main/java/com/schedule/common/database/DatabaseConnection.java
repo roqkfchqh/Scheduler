@@ -1,4 +1,4 @@
-package com.schedule.controller.common.database;
+package com.schedule.common.database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

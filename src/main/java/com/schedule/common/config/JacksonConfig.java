@@ -1,4 +1,4 @@
-package com.schedule.controller.common.config;
+package com.schedule.common.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;

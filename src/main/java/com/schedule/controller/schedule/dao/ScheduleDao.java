@@ -1,9 +1,9 @@
 package com.schedule.controller.schedule.dao;
 
-import com.schedule.controller.common.database.DatabaseExceptionHandler;
-import com.schedule.controller.common.database.DatabaseConnection;
-import com.schedule.controller.common.exception.CustomException;
-import com.schedule.controller.common.exception.ErrorCode;
+import com.schedule.common.database.DatabaseExceptionHandler;
+import com.schedule.common.database.DatabaseConnection;
+import com.schedule.common.exception.CustomException;
+import com.schedule.common.exception.ErrorCode;
 import com.schedule.controller.schedule.model.Schedule;
 import com.schedule.controller.schedule.dto.ScheduleResponseDto;
 import lombok.RequiredArgsConstructor;

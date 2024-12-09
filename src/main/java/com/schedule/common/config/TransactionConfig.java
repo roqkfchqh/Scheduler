@@ -1,4 +1,4 @@
-package com.schedule.controller.common.config;
+package com.schedule.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

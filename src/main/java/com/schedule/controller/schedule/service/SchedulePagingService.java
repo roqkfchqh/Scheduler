@@ -1,7 +1,7 @@
 package com.schedule.controller.schedule.service;
 
-import com.schedule.controller.common.exception.CustomException;
-import com.schedule.controller.common.exception.ErrorCode;
+import com.schedule.common.exception.CustomException;
+import com.schedule.common.exception.ErrorCode;
 import com.schedule.controller.schedule.dao.ScheduleDao;
 import com.schedule.controller.schedule.dto.ScheduleResponseDto;
 import lombok.RequiredArgsConstructor;

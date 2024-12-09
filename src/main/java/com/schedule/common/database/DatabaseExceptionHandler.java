@@ -1,7 +1,7 @@
-package com.schedule.controller.common.database;
+package com.schedule.common.database;
 
-import com.schedule.controller.common.exception.CustomSQLException;
-import com.schedule.controller.common.exception.SQLErrorCode;
+import com.schedule.common.exception.CustomSQLException;
+import com.schedule.common.exception.SQLErrorCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
