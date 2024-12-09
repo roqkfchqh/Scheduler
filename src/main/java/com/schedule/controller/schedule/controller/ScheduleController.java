@@ -1,5 +1,6 @@
 package com.schedule.controller.schedule.controller;
 
+import com.schedule.controller.schedule.service.PagingService;
 import com.schedule.controller.schedule.service.ScheduleService;
 import com.schedule.controller.schedule.dto.ScheduleRequestDto;
 import com.schedule.controller.schedule.dto.ScheduleResponseDto;
@@ -18,6 +19,7 @@ import java.util.UUID;
 public class ScheduleController {
 
     private final ScheduleService scheduleService;
+    private final PagingService pagingService;
 
     //save
     @PostMapping
@@ -28,7 +30,7 @@ public class ScheduleController {
     //paging
     @GetMapping
     public ResponseEntity<List<ScheduleResponseDto>> getPagedSchedules(@RequestParam(required = false) String authorName, @RequestParam(required = false) LocalDate date, @RequestParam int page, @RequestParam int size){
-        return ResponseEntity.ok(scheduleService.getPagedSchedules(authorName, date, page, size));
+        return ResponseEntity.ok(pagingService.getPagedSchedules(authorName, date, page, size));
     }
 
     //scheduleId로 schedule 가져오기

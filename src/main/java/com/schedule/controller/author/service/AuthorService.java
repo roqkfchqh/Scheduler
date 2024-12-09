@@ -3,18 +3,19 @@ package com.schedule.controller.author.service;
 import com.schedule.controller.author.dao.AuthorDao;
 import com.schedule.controller.author.dto.*;
 import com.schedule.controller.author.model.Author;
-import com.schedule.controller.common.exception.CustomException;
-import com.schedule.controller.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AuthorService {
 
+    private final AuthorValidationService authorValidationService;
     private final AuthorDao authorDao;
     private final PasswordEncoder passwordEncoder;
 
@@ -30,7 +31,7 @@ public class AuthorService {
     //update
     public AuthorResponseDto updateAuthor(UUID authorId, CombinedAuthorRequestDto dto){
         Author author = authorDao.findAuthorById(authorId);
-        validateAuthor(authorId, dto.getPasswordDto().getPassword());
+        authorValidationService.validateAuthor(authorId, dto.getPasswordDto().getPassword());
         String encodedPassword = passwordEncoder.encode(dto.getAuthorDto().getPassword());
 
         author.updateAuthor(
@@ -44,21 +45,7 @@ public class AuthorService {
 
     //delete
     public void deleteAuthor(UUID authorId, PasswordRequestDto dto){
-        validateAuthor(authorId, dto.getPassword());
+        authorValidationService.validateAuthor(authorId, dto.getPassword());
         authorDao.deleteAuthor(authorId);
     }
-
-    //validate
-    public boolean validateAuthor(UUID authorId, String password){
-        Author author = authorDao.findAuthorById(authorId);
-        if(author == null){
-            throw new CustomException(ErrorCode.USER_NOT_FOUND);
-        }
-        if(passwordEncoder.matches(password, author.getPassword())){
-            return true;
-        }else{
-            throw new CustomException(ErrorCode.WRONG_PASSWORD);
-        }
-    }
-
 }

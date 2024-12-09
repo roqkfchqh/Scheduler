@@ -5,6 +5,7 @@ import com.schedule.controller.author.dto.AuthorRequestDto;
 import com.schedule.controller.author.dto.AuthorResponseDto;
 import com.schedule.controller.author.dto.CombinedAuthorRequestDto;
 import com.schedule.controller.author.dto.PasswordRequestDto;
+import com.schedule.controller.author.service.AuthorValidationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import java.util.UUID;
 public class AuthorController {
 
     private final AuthorService authorService;
+    private final AuthorValidationService authorValidationService;
 
     //create
     @PostMapping
@@ -44,7 +46,7 @@ public class AuthorController {
     public ResponseEntity<Boolean> validatePasswordForSchedule(@RequestBody Map<Object, String> payload){
         UUID authorId = UUID.fromString((payload.get("authorId")));
         String password = payload.get("password");
-        boolean isValid = authorService.validateAuthor(authorId, password);
+        boolean isValid = authorValidationService.validateAuthor(authorId, password);
         return ResponseEntity.ok(isValid);
     }
 
