@@ -61,221 +61,225 @@
 - 구현된 기능 : 스케줄 crud, paging / 작성자 crud
 
 ## ⭐ ERD
-![img.png](img.png)
+![img_1.png](img_1.png)
 
 ## ⭐ API 명세서
 
+### **Author 관련 API**
 
-### Author 관련 API
+| **기능**       | **Method** | **URL**                           | **Request**         | **Response**      | **상태코드** |
+|----------------|------------|-----------------------------------|---------------------|-------------------|--------------|
+| Author 등록    | POST       | `/authors`                       | 등록 정보 Body      | 등록 정보         | 200: 등록    |
+| Author 조회    | GET        | `/authors/{authorId}`            | Path Param          | Author 정보       | 200: 조회    |
+| Author 수정    | POST       | `/authors/{authorId}/update`     | 수정 정보 Body      | 수정 정보         | 200: 수정    |
+| Author 삭제    | POST       | `/authors/{authorId}/delete`     | Path Param + Body   | 삭제 완료         | 204: 삭제    |
 
-| 기능      | Method | URL                          | Request       | Response     | 상태코드      |
-|-----------|--------|------------------------------|---------------|--------------|-----------|
-| Author 등록 | POST   | `/authors`                  | 등록 정보 Body | 등록 정보    | 200: 정상등록 |
-| Author 조회 | GET    | `/authors/{authorId}`       | Path Param    | Author 정보  | 200: 정상조회 |
-| Author 수정 | POST   | `/authors/{authorId}/update`| 수정 정보 Body | 수정 정보    | 200: 정상수정 |
-| Author 삭제 | POST   | `/authors/{authorId}/delete`| Path Param + Body | 삭제완료   | 204: 정상삭제 |
+---
 
-### Schedule 관련 API
+### **Schedule 관련 API**
 
-| 기능      | Method | URL                          | Request       | Response    | 상태코드      |
-|-----------|--------|------------------------------|---------------|-------------|-----------|
-| Schedule 등록 | POST   | `/schedules`               | 등록 정보 Body | 등록된 정보      | 200: 정상등록 |
-| Schedule 조회 | GET    | `/schedules/{scheduleId}`  | Path Param    | Schedule 정보 | 200: 정상조회 |
-| Schedule 수정 | POST   | `/schedules/{scheduleId}/update`| 수정 정보 Body + Header (authorPassword) | 수정된 정보      | 200: 정상수정 |
-| Schedule 삭제 | POST   | `/schedules/{scheduleId}/delete`| Path Param + Body | 삭제완료        | 204: 정상삭제 |
-| Schedule 목록 조회 | GET    | `/schedules`            | Query Params (authorName, date, page, size) | Schedule 목록 | 200: 정상조회 |
+| **기능**       | **Method** | **URL**                             | **Request**             | **Response**      | **상태코드** |
+|----------------|------------|-------------------------------------|-------------------------|-------------------|--------------|
+| Schedule 등록  | POST       | `/schedules`                       | 등록 정보 Body          | 등록된 정보       | 200: 등록    |
+| Schedule 조회  | GET        | `/schedules/{scheduleId}`          | Path Param              | Schedule 정보     | 200: 조회    |
+| Schedule 수정  | POST       | `/schedules/{scheduleId}/update`   | 수정 정보 Body          | 수정된 정보       | 200: 수정    |
+| Schedule 삭제  | POST       | `/schedules/{scheduleId}/delete`   | Path Param + Body       | 삭제 완료         | 204: 삭제    |
 
 <details><summary>상세보기
 </summary>
 
-## Author 관련 API
+## Author API
 
-### 1. Author 등록
-- **Method:** POST
-- **URL:** `/authors`
-- **Request Body:**
+### Create Author
+- **Method**: `POST`
+- **Endpoint**: `/authors`
+- **Request Body**:
   ```json
   {
-    "name": "string",
-    "email": "string",
-    "password": "string"
+    "name": "roqkfchqh",
+    "email": "roqkfchqh@github.com",
+    "password": "password123"
   }
   ```
-- **Response:**
-  - **Status Code:** 200 OK
-  - **Response Body:**
-    ```json
-    {
-      "id": "UUID",
-      "name": "string",
-      "email": "string"
-    }
-    ```
-
-### 2. Author 조회
-- **Method:** GET
-- **URL:** `/authors/{authorId}`
-- **Path Parameters:**
-  - `authorId` (string, required): Author의 UUID.
-- **Response:**
-  - **Status Code:** 200 OK
-  - **Response Body:**
-    ```json
-    {
-      "id": "UUID",
-      "name": "string",
-      "email": "string"
-    }
-    ```
-
-### 3. Author 수정
-- **Method:** POST
-- **URL:** `/authors/{authorId}/update`
-- **Path Parameters:**
-  - `authorId` (string, required): Author의 UUID.
-- **Request Body:**
+- **Response**:
   ```json
   {
-    "name": "string",
-    "email": "string",
-    "password": "string"
-  },
-  {
-    "password": "string"
+    "id": "UUID",
+    "name": "roqkfchqh",
+    "email": "roqkfchqh@github.com",
+    "content": [],
+    "password": "hashed_password",
+    "created": "2023-12-10",
+    "updated": "2023-12-10"
   }
   ```
-- **Response:**
-  - **Status Code:** 200 OK
-  - **Response Body:**
-    ```json
-    {
-      "id": "UUID",
-      "name": "string",
-      "email": "string"
-    }
-    ```
 
-### 4. Author 삭제
-- **Method:** POST
-- **URL:** `/authors/{authorId}/delete`
-- **Path Parameters:**
-  - `authorId` (string, required): Author의 UUID.
-- **Request Body:**
+### Get Author by ID
+- **Method**: `GET`
+- **Endpoint**: `/authors/{authorId}`
+- **Path Variable**:
+  - `authorId`: `UUID`
+- **Response**:
   ```json
   {
-    "password": "string"
+    "id": "UUID",
+    "name": "roqkfchqh",
+    "email": "roqkfchqh@github.com",
+    "content": ["Meeting", "Lunch"],
+    "password": "hashed_password",
+    "created": "2023-12-10",
+    "updated": "2023-12-10"
   }
   ```
-- **Response:**
-  - **Status Code:** 204 No Content
 
----
+### Update Author
+- **Method**: `POST`
+- **Endpoint**: `/authors/{authorId}/update`
+- **Path Variable**:
+  - `authorId`: `UUID`
+- **Request Body**:
+  ```json
+  {
+    "authorDto": {
+      "name": "roqkfrhtn",
+      "email": "roqkfrhtn@github.com",
+      "password": "newpassword"
+    },
+    "passwordDto": {
+      "password": "oldpassword"
+    }
+  }
+  ```
+- **Response**:
+  ```json
+  {
+    "id": "UUID",
+    "name": "roqkfrhtn",
+    "email": "roqkfrhtn@github.com",
+    "content": ["과제", "수업"],
+    "password": "hashed_new_password",
+    "created": "2023-12-10",
+    "updated": "2023-12-11"
+  }
+  ```
 
-## Schedule 관련 API
+### Delete Author
+- **Method**: `POST`
+- **Endpoint**: `/authors/{authorId}/delete`
+- **Path Variable**:
+  - `authorId`: `UUID`
+- **Request Body**:
+  ```json
+  {
+    "password": "author_password"
+  }
+  ```
+- **Response**:
+  - Status: `204 No Content`
 
-### 1. Schedule 등록
-- **Method:** POST
-- **URL:** `/schedules`
-- **Request Body:**
+### Validate Author Password
+- **Method**: `POST`
+- **Endpoint**: `/authors/validate-password`
+- **Request Body**:
   ```json
   {
     "authorId": "UUID",
-    "content": "string"
+    "password": "password123"
   }
   ```
-- **Response:**
-  - **Status Code:** 200 OK
-  - **Response Body:**
-    ```json
-    {
-      "scheduleId": "UUID",
-      "authorId": "UUID",
-      "content": "string",
-      "created": "2024-12-09T12:00:00Z",
-      "updated": "2024-12-09T12:00:00Z"
-    }
-    ```
+- **Response**:
+  ```json
+  true
+  ```
 
-### 2. Schedule 조회
-- **Method:** GET
-- **URL:** `/schedules/{scheduleId}`
-- **Path Parameters:**
-  - `scheduleId` (string, required): Schedule의 UUID.
-- **Response:**
-  - **Status Code:** 200 OK
-  - **Response Body:**
-    ```json
-    {
-      "scheduleId": "UUID",
-      "authorId": "UUID",
-      "content": "string",
-      "created": "2024-12-09T12:00:00Z",
-      "updated": "2024-12-09T12:00:00Z"
-    }
-    ```
+### Validate Author ID
+- **Method**: `POST`
+- **Endpoint**: `/authors/validate-author`
+- **Request Body**:
+  ```json
+  "UUID"
+  ```
+- **Response**:
+  ```json
+  true
+  ```
 
-### 3. Schedule 수정
-- **Method:** POST
-- **URL:** `/schedules/{scheduleId}/update`
-- **Path Parameters:**
-  - `scheduleId` (string, required): Schedule의 UUID.
-- **Request Headers:**
-  - `authorPassword` (string, required): Author의 패스워드.
-- **Request Body:**
+## Schedule API
+
+### Create Schedule
+- **Method**: `POST`
+- **Endpoint**: `/schedules`
+- **Request Body**:
   ```json
   {
-    "content": "string"
+    "author_id": "UUID",
+    "content": "할 일"
   }
   ```
-- **Response:**
-  - **Status Code:** 200 OK
-  - **Response Body:**
-    ```json
-    {
-      "scheduleId": "UUID",
-      "authorId": "UUID",
-      "content": "string",
-      "created": "2024-12-09T12:00:00Z",
-      "updated": "2024-12-09T12:00:00Z"
-    }
-    ```
-
-### 4. Schedule 삭제
-- **Method:** POST
-- **URL:** `/schedules/{scheduleId}/delete`
-- **Path Parameters:**
-  - `scheduleId` (string, required): Schedule의 UUID.
-- **Request Body:**
+- **Response**:
   ```json
   {
-    "password": "string"
+    "authorId": "UUID",
+    "content": "할 일",
+    "authorName": "roqkfchqh",
+    "authorEmail": "roqkfchqh@github.com",
+    "created": "2023-12-10",
+    "updated": "2023-12-10"
   }
   ```
-- **Response:**
-  - **Status Code:** 204 No Content
 
-### 5. Schedule 목록 조회
-- **Method:** GET
-- **URL:** `/schedules`
-- **Query Parameters:**
-  - `authorName` (string, optional): Author 이름.
-  - `date` (string, optional): 특정 날짜 (YYYY-MM-DD).
-  - `page` (integer, required): 페이지 번호.
-  - `size` (integer, required): 한 페이지에 표시할 Schedule 개수.
-- **Response:**
-  - **Status Code:** 200 OK
-  - **Response Body:**
-    ```json
-    [
-      {
-        "scheduleId": "UUID",
-        "authorId": "UUID",
-        "content": "string",
-        "created": "2024-12-09T12:00:00Z",
-        "updated": "2024-12-09T12:00:00Z"
-      }
-    ]
-    ```
+### Get Schedule by ID
+- **Method**: `GET`
+- **Endpoint**: `/schedules/{scheduleId}`
+- **Path Variable**:
+  - `scheduleId`: `UUID`
+- **Response**:
+  ```json
+  {
+    "authorId": "UUID",
+    "content": "할 일",
+    "authorName": "roqkfchqh",
+    "authorEmail": "roqkfchqh@github.com",
+    "created": "2023-12-10",
+    "updated": "2023-12-10"
+  }
+  ```
+
+### Update Schedule
+- **Method**: `POST`
+- **Endpoint**: `/schedules/{scheduleId}/update`
+- **Path Variable**:
+  - `scheduleId`: `UUID`
+- **Request Body**:
+  ```json
+  {
+    "author_id": "UUID",
+    "content": "Updated content"
+  }
+  ```
+- **Response**:
+  ```json
+  {
+    "authorId": "UUID",
+    "content": "Updated content",
+    "authorName": "roqkfchqh",
+    "authorEmail": "roqkfchqh@github.com",
+    "created": "2023-12-10",
+    "updated": "2023-12-11"
+  }
+  ```
+
+### Delete Schedule
+- **Method**: `POST`
+- **Endpoint**: `/schedules/{scheduleId}/delete`
+- **Path Variable**:
+  - `scheduleId`: `UUID`
+- **Request Body**:
+  ```json
+  "author_password"
+  ```
+- **Response**:
+  - Status: `204 No Content`
 
 
 </details>
