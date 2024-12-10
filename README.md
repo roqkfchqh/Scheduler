@@ -27,7 +27,6 @@
 │   │   ├── 📁dao
 │   │   │   └── AuthorDao
 │   │   ├── 📁dto
-│   │   │   ├── AuthorMapper
 │   │   │   ├── AuthorRequestDto
 │   │   │   ├── AuthorResponseDto
 │   │   │   ├── CombinedAuthorRequestDto
