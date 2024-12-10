@@ -28,6 +28,7 @@ public class AuthorController {
         return ResponseEntity.ok(authorCRUDService.createAuthor(dto));
     }
 
+    //read
     @GetMapping("/{authorId}")
     public ResponseEntity<AuthorResponseDto> readAuthor(@PathVariable UUID authorId){
         return ResponseEntity.ok(authorCRUDService.readAuthor(authorId));
@@ -51,8 +52,13 @@ public class AuthorController {
     public ResponseEntity<Boolean> validatePasswordForSchedule(@RequestBody Map<Object, String> payload){
         UUID authorId = UUID.fromString((payload.get("authorId")));
         String password = payload.get("password");
-        boolean isValid = authorValidationService.validateAuthor(authorId, password);
+        boolean isValid = authorValidationService.validatePassword(authorId, password);
         return ResponseEntity.ok(isValid);
+    }
+
+    @PostMapping("/validate-author")
+    public ResponseEntity<Boolean> validateAuthorForSchedule(@RequestBody UUID authorId){
+        return ResponseEntity.ok(authorValidationService.validateAuthor(authorId));
     }
 
 }

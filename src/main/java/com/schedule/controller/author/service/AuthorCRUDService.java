@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -22,37 +23,40 @@ public class AuthorCRUDService {
     //create
     public AuthorResponseDto createAuthor(AuthorRequestDto dto){
         String encodedPassword = passwordEncoder.encode(dto.getPassword());
-        Author author = AuthorDtoMapper.toEntity(dto, encodedPassword);
-
+        Author author = new Author(dto.getName(), dto.getEmail(), encodedPassword);
         authorDao.createAuthor(author);
-        return AuthorDtoMapper.toDto(author);
+        return authorDao.findAuthorById(author.getId());
     }
 
     //read
     @Transactional(readOnly = true)
     public AuthorResponseDto readAuthor(UUID authorId){
-        Author author = authorDao.findAuthorById(authorId);
-        return AuthorDtoMapper.toDto(author);
+        return authorDao.findAuthorById(authorId);
     }
 
     //update
     public AuthorResponseDto updateAuthor(UUID authorId, CombinedAuthorRequestDto dto){
-        Author author = authorDao.findAuthorById(authorId);
-        authorValidationService.validateAuthor(authorId, dto.getPasswordDto().getPassword());
+        AuthorResponseDto existingAuthor = authorDao.findAuthorById(authorId);
+
+        authorValidationService.validatePassword(authorId, dto.getPasswordDto().getPassword());
         String encodedPassword = passwordEncoder.encode(dto.getAuthorDto().getPassword());
 
-        author.updateAuthor(
-                dto.getAuthorDto().getName(),
-                dto.getAuthorDto().getEmail(),
-                encodedPassword
-        );
-        authorDao.updateAuthor(author);
-        return AuthorDtoMapper.toDto(author);
+        Author updatedAuthor = Author.builder()
+                .id(authorId)
+                .password(encodedPassword)
+                .name(dto.getAuthorDto().getName())
+                .email(dto.getAuthorDto().getEmail())
+                .created(LocalDateTime.parse(existingAuthor.getCreated()))
+                .updated(LocalDateTime.now())
+                .build();
+
+        authorDao.updateAuthor(updatedAuthor);
+        return authorDao.findAuthorById(authorId);
     }
 
     //delete
     public void deleteAuthor(UUID authorId, PasswordRequestDto dto){
-        authorValidationService.validateAuthor(authorId, dto.getPassword());
+        authorValidationService.validatePassword(authorId, dto.getPassword());
         authorDao.deleteAuthor(authorId);
     }
 }

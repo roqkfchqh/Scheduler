@@ -41,14 +41,15 @@ public class ScheduleController {
 
     //update
     @PostMapping("/{scheduleId}/update")
-    public ResponseEntity<ScheduleResponseDto> updateSchedule(@PathVariable UUID scheduleId, @Valid @RequestBody ScheduleRequestDto dto, @Valid @RequestHeader String authorPassword){
+    public ResponseEntity<ScheduleResponseDto> updateSchedule(@PathVariable UUID scheduleId, @Valid @RequestBody ScheduleRequestDto dto, @RequestHeader String authorPassword){
         return ResponseEntity.ok(scheduleCRUDService.updateSchedule(scheduleId, dto, authorPassword));
     }
 
     //delete
     @PostMapping("/{scheduleId}/delete")
-    public ResponseEntity<ScheduleResponseDto> deleteSchedule(@PathVariable UUID scheduleId, @Valid @RequestBody String authorPassword){
-        scheduleCRUDService.deleteSchedule(scheduleId, authorPassword);
+    public ResponseEntity<ScheduleResponseDto> deleteSchedule(@PathVariable UUID scheduleId, @RequestBody String authorPassword, @RequestHeader UUID authorId){
+        scheduleCRUDService.deleteSchedule(scheduleId, authorPassword, authorId);
         return ResponseEntity.noContent().build();
+
     }
 }

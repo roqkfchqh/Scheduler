@@ -23,6 +23,7 @@ public class ScheduleCRUDService {
 
     //create
     public ScheduleResponseDto createSchedule(ScheduleRequestDto dto){
+        serviceValidationService.validateAuthorId(dto.getAuthor_id());
         Schedule schedule = new Schedule(dto.getContent(), dto.getAuthor_id());
         scheduleDao.createSchedule(schedule);
         return readSchedule(schedule.getId());
@@ -40,6 +41,7 @@ public class ScheduleCRUDService {
 
     //update
     public ScheduleResponseDto updateSchedule(UUID scheduleId, ScheduleRequestDto dto, String authorPassword){
+        serviceValidationService.validateAuthorId(dto.getAuthor_id());
         ScheduleResponseDto existingSchedule = serviceValidationService.validateIdAndPassword(scheduleId, authorPassword);
 
         Schedule updatedSchedule = Schedule.builder()
@@ -54,7 +56,8 @@ public class ScheduleCRUDService {
     }
 
     //delete
-    public void deleteSchedule(UUID scheduleId, String authorPassword){
+    public void deleteSchedule(UUID scheduleId, String authorPassword, UUID authorId){
+        serviceValidationService.validateAuthorId(authorId);
         serviceValidationService.validateIdAndPassword(scheduleId, authorPassword);
         scheduleDao.deleteSchedule(scheduleId);
     }

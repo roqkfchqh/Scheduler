@@ -2,11 +2,14 @@ package com.schedule.controller.schedule.service;
 
 import com.schedule.common.exception.CustomException;
 import com.schedule.common.exception.ErrorCode;
+import com.schedule.controller.author.dto.AuthorResponseDto;
 import com.schedule.controller.schedule.dao.ScheduleDao;
 import com.schedule.controller.schedule.dto.ScheduleResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
@@ -19,7 +22,7 @@ public class ServiceValidationService {
     private final RestTemplate restTemplate;
     private final ScheduleDao scheduleDao;
 
-    //authorId와 password 검증
+    //scheduleId와 password 검증
     public ScheduleResponseDto validateIdAndPassword(UUID scheduleId, String authorPassword){
         ScheduleResponseDto existingSchedule = scheduleDao.findScheduleById(scheduleId);
         if(existingSchedule == null){
@@ -34,5 +37,22 @@ public class ServiceValidationService {
             throw new CustomException(ErrorCode.WRONG_PASSWORD);
         }
         return existingSchedule;
+    }
+
+    //authorId 검증
+    public void validateAuthorId(UUID authorId){
+        String url = "http://localhost:8080/authors/validate-author";
+
+        ResponseEntity<Boolean> response = restTemplate.postForEntity(
+                url,
+                authorId,
+                Boolean.class
+        );
+        if(response.getStatusCode() != HttpStatus.OK || response.getBody() == null){
+            throw new CustomException(ErrorCode.FORBIDDEN_OPERATION);
+        }
+        if(Boolean.FALSE.equals(response.getBody())){
+            throw new CustomException(ErrorCode.FORBIDDEN_OPERATION);
+        }
     }
 }

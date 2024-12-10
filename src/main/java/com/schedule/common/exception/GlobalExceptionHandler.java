@@ -6,7 +6,9 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpClientErrorException;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,6 +32,12 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(e.getStatus(), e.getMessage(), null);
     }
 
+    //restTemplateException
+    @ExceptionHandler(HttpClientErrorException.class)
+    public ResponseEntity<Map<String, Object>> handleHttpClientErrorException(HttpClientErrorException e){
+        return buildErrorResponse((HttpStatus) e.getStatusCode(), e.getMessage(), null);
+    }
+
     //공통 errorResponse
     private ResponseEntity<Map<String, Object>> buildErrorResponse(HttpStatus status, String message, Object errors){
         Map<String, Object> response = new HashMap<>();
@@ -41,4 +49,6 @@ public class GlobalExceptionHandler {
         }
         return ResponseEntity.status(status).body(response);
     }
+
+
 }

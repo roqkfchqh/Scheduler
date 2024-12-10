@@ -6,7 +6,6 @@ import com.schedule.common.exception.CustomException;
 import com.schedule.common.exception.ErrorCode;
 import com.schedule.controller.schedule.model.Schedule;
 import com.schedule.controller.schedule.dto.ScheduleResponseDto;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -16,7 +15,6 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-@RequiredArgsConstructor
 public class ScheduleDao {
 
     //create
@@ -62,7 +60,7 @@ public class ScheduleDao {
 
     //delete
     public void deleteSchedule(UUID scheduleId){
-        String sql = "DELETE FROM schedule WHERE id = ?";
+        String sql = "UPDATE schedule SET is_deleted = true WHERE id = ?";
 
         try(Connection conn = DatabaseConnection.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql)){
@@ -84,7 +82,7 @@ public class ScheduleDao {
         String sql = "SELECT s.id, s.content, s.created, s.updated, s.author_id, a.name AS author_name, a.email AS author_email " +
                 "FROM schedule s " +
                 "JOIN author a ON s.author_id = a.id " +
-                "WHERE 1=1";
+                "WHERE is_deleted = false ";
 
         if(authorName != null){
             sql += " AND a.name LIKE ?";
@@ -112,7 +110,7 @@ public class ScheduleDao {
                     schedules.add(ScheduleDaoMapper.getBuild(rs));
                 }
             }
-        } catch (SQLException e) {
+        }catch(SQLException e){
             DatabaseExceptionHandler.sqlExtracted(e);
         }
         return schedules;
@@ -120,7 +118,7 @@ public class ScheduleDao {
 
     //scheduleId 로 조회
     public ScheduleResponseDto findScheduleById(UUID scheduleId){
-        String sql = "SELECT s.content, s.created, s.updated ,s.author_id, a.name AS author_name, a.email AS author_email FROM schedule s JOIN author a ON s.author_id = a.id WHERE s.id = ?";
+        String sql = "SELECT s.content, s.created, s.updated ,s.author_id, s.is_deleted, a.name AS author_name, a.email AS author_email FROM schedule s JOIN author a ON s.author_id = a.id WHERE s.id = ?";
 
         try(Connection conn = DatabaseConnection.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql)){
@@ -129,6 +127,9 @@ public class ScheduleDao {
 
             try(ResultSet rs = pstmt.executeQuery()){
                 if(rs.next()){
+                    if(rs.getBoolean("is_deleted")){
+                        throw new CustomException(ErrorCode.DELETED_SCHEDULE);
+                    }
                     return ScheduleDaoMapper.getBuild(rs);
                 }else{
                     throw new CustomException(ErrorCode.CONTENT_NOT_FOUND);
