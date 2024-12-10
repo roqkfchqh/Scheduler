@@ -20,7 +20,7 @@ public class AuthorValidationService {
     private final AuthorDao authorDao;
     private final PasswordEncoder passwordEncoder;
 
-    //validate
+    //password & authorId validate
     public boolean validatePassword(UUID authorId, String password){
         AuthorResponseDto author = authorDao.findAuthorById(authorId);
         if(author == null){
@@ -29,6 +29,7 @@ public class AuthorValidationService {
         return passwordEncoder.matches(password, author.getPassword());
     }
 
+    //authorId validate
     public boolean validateAuthor(UUID authorId){
         AuthorResponseDto author = authorDao.findAuthorById(authorId);
         if(author == null){

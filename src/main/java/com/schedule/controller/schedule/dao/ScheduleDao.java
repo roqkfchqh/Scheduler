@@ -77,8 +77,8 @@ public class ScheduleDao {
         }
     }
 
-    //모두조회 (paging 용)
-    public List<ScheduleResponseDto> findAllSchedule(String authorName, LocalDate date){
+    // 모두조회 (paging 용)
+    public List<ScheduleResponseDto> findAllSchedule(String authorName, LocalDate date, int offset, int limit){
         String sql = "SELECT s.id, s.content, s.created, s.updated, s.author_id, a.name AS author_name, a.email AS author_email " +
                 "FROM schedule s " +
                 "JOIN author a ON s.author_id = a.id " +
@@ -90,11 +90,11 @@ public class ScheduleDao {
         if(date != null){
             sql += " AND (DATE(s.created) = ? OR DATE(s.updated) = ?)";
         }
-        sql += " ORDER BY s.created DESC";
+        sql += " ORDER BY s.created DESC LIMIT ? OFFSET ?";
 
         List<ScheduleResponseDto> schedules = new ArrayList<>();
         try(Connection conn = DatabaseConnection.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql)){
+             PreparedStatement pstmt = conn.prepareStatement(sql)){
 
             int index = 1;
             if(authorName != null){
@@ -104,6 +104,8 @@ public class ScheduleDao {
                 pstmt.setDate(index++, Date.valueOf(date));
                 pstmt.setDate(index++, Date.valueOf(date));
             }
+            pstmt.setInt(index++, limit);
+            pstmt.setInt(index, offset);
 
             try(ResultSet rs = pstmt.executeQuery()){
                 while(rs.next()){
@@ -115,6 +117,7 @@ public class ScheduleDao {
         }
         return schedules;
     }
+
 
     //scheduleId 로 조회
     public ScheduleResponseDto findScheduleById(UUID scheduleId){

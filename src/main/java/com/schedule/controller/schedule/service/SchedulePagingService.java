@@ -23,18 +23,13 @@ public class SchedulePagingService {
         if(page < 1 || size < 1){
             throw new CustomException(ErrorCode.PAGING_ERROR);
         }
+        int offset = (page - 1) * size;
 
-        List<ScheduleResponseDto> schedules = scheduleDao.findAllSchedule(authorName, date);
+        List<ScheduleResponseDto> schedules = scheduleDao.findAllSchedule(authorName, date, offset, size);
         if(schedules.isEmpty()){
             throw new CustomException(ErrorCode.NOT_FOUND);
         }
 
-        int start = (page - 1) * size;
-        int end = Math.min(start + size, schedules.size());
-        if(start >= schedules.size()){
-            return List.of();
-        }
-
-        return schedules.subList(start, end);
+        return schedules;
     }
 }
